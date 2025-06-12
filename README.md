@@ -1,54 +1,50 @@
-# React + TypeScript + Vite
+# Visual Learn: Concept Graph Explorer
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+**Visual Learn** is a frictionless, interactive learning tool that empowers users to visually explore and understand complex technical concepts. By leveraging the generative power of Large Language Models (LLMs), the application transforms learning from a passive reading exercise into an active, self-directed journey of discovery.
 
-Currently, two official plugins are available:
+This project is a web-only, client-side Concept Graph Explorer that generates interactive, node-based graphs to visualize knowledge domains.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## Key Features
 
-## Expanding the ESLint configuration
+-   **Dual Graph Modes**:
+    -   **Focus Mode**: A guided, linear path for a structured, step-by-step curriculum on a new topic.
+    -   **Exploration Mode**: A radial mind-map for open-ended discovery and understanding the interconnectedness of a knowledge domain.
+-   **LLM-Powered Content**: All conceptual content is generated on-demand by a user-selected LLM (OpenAI, Anthropic, or OpenRouter).
+-   **Client-Side & Private**: The application is entirely browser-based with no backend. API keys and graph data are stored locally in your browser, ensuring privacy and user control.
+-   **Data Persistence & Sharing**:
+    -   Export and import graph states as JSON files.
+    -   Generate shareable links that encode the entire graph, allowing you to share your knowledge maps with others.
+-   **Rich User Interface**: Built with React Flow, providing a smooth, interactive experience with panning, zooming, and a minimap for easy navigation.
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+## Tech Stack
 
-```js
-export default tseslint.config({
-  extends: [
-    // Remove ...tseslint.configs.recommended and replace with this
-    ...tseslint.configs.recommendedTypeChecked,
-    // Alternatively, use this for stricter rules
-    ...tseslint.configs.strictTypeChecked,
-    // Optionally, add this for stylistic rules
-    ...tseslint.configs.stylisticTypeChecked,
-  ],
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-})
-```
+-   **Frontend**: React, TypeScript, Vite
+-   **Graph Visualization**: React Flow
+-   **State Management**: Zustand (or similar)
+-   **LLM Integration**: Modular abstraction for various LLM providers.
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+## Getting Started
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+1.  **Clone the repository:**
+    ```bash
+    git clone https://github.com/your-username/visual-learn.git
+    cd visual-learn
+    ```
 
-export default tseslint.config({
-  plugins: {
-    // Add the react-x and react-dom plugins
-    'react-x': reactX,
-    'react-dom': reactDom,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended typescript rules
-    ...reactX.configs['recommended-typescript'].rules,
-    ...reactDom.configs.recommended.rules,
-  },
-})
-```
+2.  **Install dependencies:**
+    ```bash
+    npm install
+    ```
+
+3.  **Set up your environment:**
+    You'll need an API key from an LLM provider (like OpenAI). The application will prompt you to enter this in the settings panel.
+
+4.  **Run the development server:**
+    ```bash
+    npm run dev
+    ```
+    The application will be available at `http://localhost:5173` (or another port if 5173 is busy).
+
+## How It Works
+
+The application leverages a user-provided LLM API key to generate content. When you enter a topic, the LLM generates a structured JSON response containing the concept's title, keywords, a detailed explanation, and other metadata. This data is then used to build and render the interactive graph. You can find more details in the [Product Requirements Document](.taskmaster/docs/prd.txt).
