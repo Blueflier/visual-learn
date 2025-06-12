@@ -1,0 +1,137 @@
+1. Overview
+1.1. Product Vision
+
+To create a frictionless, interactive learning tool that empowers users to visually explore and understand complex technical concepts. By leveraging the generative power of Large Language Models (LLMs), the application will transform learning from a passive reading exercise into an active, self-directed journey of discovery.
+1.2. Executive Summary
+
+This document outlines the requirements for a web-only, client-side Concept Graph Explorer. The application generates interactive, node-based graphs to visualize knowledge domains. Users can learn through a guided, linear Focus Mode or freely explore connections in a radial Exploration Mode. All content is generated on-the-fly by a user-selected LLM (OpenAI, Anthropic, or OpenRouter) via their personal API key. The application is entirely browser-based with no backend, ensuring user privacy and control by storing all graph data locally as downloadable JSON files.
+1.3. Goals & Success Metrics
+
+    Goal 1: Enhance Learning Efficiency. Provide a tool that makes understanding complex topics faster and more intuitive than traditional linear text.
+        Success Metric: Positive qualitative feedback from users (e.g., via a feedback form, social media mentions, or GitHub issues) highlighting the tool's effectiveness in their learning process.
+    Goal 2: Foster Curiosity and Self-Directed Exploration. Encourage users to discover new concepts and see relationships they might have missed.
+        Success Metric: Analytics showing an average session duration of over 10 minutes and an average graph size of over 15 nodes, indicating deep engagement.
+    Goal 3: Deliver a Frictionless & Private User Experience. Remove barriers to entry with no sign-up and ensure user data remains entirely on their client.
+        Success Metric: High adoption and usage rates for a publicly hosted version, tracked via privacy-respecting analytics (e.g., Plausible).
+
+2. Functional Requirements
+2.1. Core Experience: Dual Graph Modes
+
+The application offers two distinct visualization and interaction modes for any given set of concept data.
+
+    Focus Mode (Guided Linear Path):
+        Purpose: Ideal for users seeking a structured, step-by-step curriculum to learn a new topic.
+        Mechanism: Upon entering a topic, the LLM generates a core curriculum as an ordered sequence of concept nodes (e.g., [1. Prerequisite A, 2. Prerequisite B, 3. Core Concept]).
+        Visualization: Renders the nodes in a clean, left-to-right linear layout. The currently selected node is highlighted, while past nodes may be dimmed to maintain focus.
+        Interaction: Users navigate sequentially using "Next" and "Previous" buttons or keyboard arrows.
+        Handling Prerequisites: Each node will list its own prerequisites. If a user clicks a prerequisite they don't understand, it will open that concept in Exploration Mode in a non-disruptive overlay or side panel, allowing for a "deep dive" without losing their place in the linear curriculum.
+
+    Exploration Mode (Radial Mind-Map):
+        Purpose: Designed for open-ended discovery, brainstorming, and understanding the interconnectedness of a knowledge domain.
+        Mechanism: A central topic node expands outwards, with the LLM suggesting related concepts.
+        Visualization: Renders a radial graph (mind map) with the central concept at the core. New nodes branch out from their parent. The layout should be managed by an auto-layout algorithm (e.g., provided by React Flow or a similar library) to prevent overlap.
+        Interaction:
+            Expand: Clicking an "Expand" button or double-clicking a node prompts the LLM for related sub-concepts, which are then added as new child nodes.
+            Refocus: A user can select any node and make it the new center of the radial view, reorganizing the graph around it.
+            Pan & Zoom: The user has full freedom to pan and zoom across the canvas.
+
+2.2. Content Generation & Node Structure
+
+    LLM-Powered Content: All conceptual content (explanations, keywords) is generated on-demand by the selected LLM.
+
+    Structured LLM Response (JSON): The application must enforce a strict JSON output format from the LLM to ensure reliable parsing.
+
+    Proposed JSON Schema:
+    JSON
+
+    {
+      "concept_title": "Machine Learning",
+      "keywords": [
+        "Supervised Learning",
+        "Unsupervised Learning",
+        "Statistics",
+        "Linear Algebra"
+      ],
+      "explanation": "<div><h1>Machine Learning</h1><p>...</p></div>",
+      "difficulty": "Intermediate", // Optional: "Beginner", "Intermediate", "Advanced"
+      "concept_type": "Field" // Optional: "Theory", "Algorithm", "Tool", "Person"
+    }
+
+        Error Handling: If the LLM response is not valid JSON or fails the schema validation, the application must not crash. It should display a user-friendly error message and offer a "Retry" button.
+
+    Duplicate Concept Prevention:
+        Prompt-Level: The list of all existing concept titles on the graph is passed to the LLM with each request, instructing it to avoid suggesting them again.
+        Client-Side Fuzzy Matching: Before adding a new node suggested by the LLM, the app will perform a client-side string similarity check (e.g., using the Jaro-Winkler or a similar algorithm) against all existing nodes. If a new concept has a similarity score > 0.9 to an existing one (e.g., "Back Propagation" vs. "Backpropagation"), the app will automatically merge them or prompt the user: "This is very similar to an existing concept. Link to existing node?"
+
+2.3. LLM Provider Integration
+
+    Supported Providers: OpenAI, Anthropic, OpenRouter. The architecture must be modular to easily add new providers in the future.
+    API Key Management:
+        Users must provide their own API key via a settings panel.
+        The key is stored exclusively in the browser's localStorage or session state. It is never sent to any server besides the chosen LLM provider's API endpoint.
+        The UI must clearly state that API usage may incur costs to the user.
+    Provider Abstraction Layer: A dedicated module in the codebase will handle the differences in API request formats and endpoints, providing a single, consistent interface to the rest of the application.
+
+2.4. Data Persistence & Sharing
+
+    Client-Side Save/Load:
+        Save: Users can export the entire graph (nodes, edges, positions, and content) as a single .json file to their local machine.
+        Load: Users can upload a previously saved .json file to restore a graph state.
+    Shareable Links (Key Feature Enhancement):
+        Users can generate a unique URL that encodes the entire graph's JSON data into a Base64 string within the URL fragment (.../index.html#graph=...).
+        Anyone with this link can open the application and see the exact same graph, fully interactive, without the sender needing to host anything. This enables seamless sharing and collaboration on knowledge maps.
+
+2.5. User Interface & Interaction
+
+    Graph Canvas: Built with React Flow, providing smooth panning, zooming, node dragging, and selection. It will feature a minimap for easy navigation of large graphs.
+    Onboarding: A brief, dismissible tour for first-time users (e.g., using Shepherd.js) will explain the core concepts: Focus vs. Exploration modes, how to expand nodes, and where to enter the API key.
+    Content Display: A dedicated, closable sidebar will display the detailed explanation HTML for the currently selected node, keeping the main graph view clean.
+    Controls:
+        A clean top toolbar will house:
+            New Graph / Load Graph / Save Graph / Generate Shareable Link buttons.
+            Mode switcher (Toggle between Focus and Exploration layouts).
+            Settings icon for the provider and API key panel.
+        Context-sensitive controls on nodes (e.g., Expand, Refocus, Show Details).
+    Visual Feedback: Clear loading indicators (spinners) on nodes being generated. Visual differentiation for node states (e.g., active, explored, un-explored).
+
+3. Non-Functional Requirements
+Category	Requirement
+Performance	- The UI must remain responsive (interactions &lt; 100ms) with up to 200 nodes on the canvas. &lt;br> - LLM API calls should show a loading state and time out gracefully after 30 seconds. &lt;br> - Initial application load time should be under 3 seconds on a standard broadband connection.
+Reliability	- The application must handle API failures, network errors, and malformed LLM responses without crashing. &lt;br> - State should be resilient to page reloads through localStorage auto-saving of the current API key and graph state.
+Security & Privacy	- User API keys must only be stored in the browser's localStorage and sent only to the selected LLM provider's API over HTTPS. &lt;br> - A clear privacy disclaimer will be present in the UI, stating that concept queries are processed by third-party LLM services and are subject to their data policies. &lt;br> - Rendered HTML from the LLM will be sanitized to prevent XSS attacks.
+Usability & UX	- The interface must be intuitive for technically-inclined users. &lt;br> - Clear distinction between Focus and Exploration modes must be maintained through visual design. &lt;br> - Text must be legible with good contrast and responsive font sizes.
+Accessibility (A11y)	- The application should strive for WCAG 2.1 AA compliance. &lt;br> - All interactive elements must be keyboard-navigable. &lt;br> - Key elements must have appropriate ARIA labels for screen readers. &lt;br> - Provide a high-contrast theme option.
+Extensibility	- The codebase must be modular, allowing for easy addition of new LLM providers, visualization layouts, or export formats in the future.
+Offline Capability	- The application must be functional offline for viewing and interacting with previously loaded or saved graphs. Features requiring an internet connection (i.e., generating new nodes) will be gracefully disabled.
+4. System Architecture
+
+The application is a purely client-side Single Page Application (SPA) built with React.
+
+    Frontend Framework: React (using functional components and hooks).
+    State Management: React Context for simple state (like API settings). For the main graph state, a more robust client-side state manager like Zustand or Redux Toolkit is recommended to handle complex updates efficiently.
+    Graph Visualization: React Flow library for rendering and managing the interactive graph canvas.
+    LLM Integration: An abstraction layer (e.g., an api.ts module) will manage all fetch calls to external LLM APIs.
+    Data Persistence: Browser localStorage for session persistence and the File System Access API / Blob URLs for explicit save/load of .json files.
+    Utilities: A separate module will contain helper functions for JSON schema validation, string similarity checks, and Base64 encoding/decoding for shareable links.
+    No Backend: The architecture explicitly excludes a custom backend server, reducing maintenance overhead and maximizing user privacy. The application will be hosted as a static site on a platform like Vercel, Netlify, or GitHub Pages.
+
+5. User Flow
+
+Scenario: A developer wants to learn "WebSockets".
+
+    First-Time Onboarding: The user (Alex) opens the app. A pop-up tour highlights the "Settings" for the API key, the "Topic Input" field, and the "Focus/Exploration" mode toggle. Alex dismisses the tour.
+    Setup: Alex clicks "Settings," selects "OpenAI," and pastes in their API key. The key is saved to localStorage.
+    Starting in Focus Mode: Alex types "WebSockets" into the topic input and selects "Focus Mode."
+    Guided Learning: The app queries the LLM and displays a linear path: [1. HTTP Polling] -> [2. WebSockets] -> [3. Socket.IO]. Alex clicks on the first node, "HTTP Polling," and reads the explanation in the sidebar.
+    Deep Dive: The "WebSockets" node lists "Handshake Protocol" as a key concept. Alex is curious and clicks on it. An Exploration Mode graph for "Handshake Protocol" opens in a modal window, showing its constituent parts. Alex explores this for a moment, closes the modal, and returns to the main focus path, now with better context.
+    Switching to Exploration Mode: After completing the focus path, Alex wants to see how WebSockets relate to the broader ecosystem. They toggle the main view to "Exploration Mode." The view changes to a radial graph with "WebSockets" at the center.
+    Free Exploration: Alex expands the "WebSockets" node, revealing related concepts like "Real-time Applications," "Message Queues," and "gRPC." They spend time exploring these new pathways.
+    Saving and Sharing: Satisfied with their map, Alex clicks "Generate Shareable Link." They copy the generated URL and send it to a colleague. The colleague opens the link and sees the exact same interactive graph Alex created. Finally, Alex clicks "Save Graph" to download the websockets_map.json file for future reference.
+
+6. Future Considerations (Out of Scope for V1)
+
+    Multi-Graph Management: A tabbed interface or project sidebar to manage multiple graphs within a single session.
+    Local LLM Integration: Support for running models entirely in the browser via WebLLM or similar technologies for ultimate privacy and offline generation.
+    Advanced Export Options: Exporting graphs as PNG, SVG, or PDF documents.
+    Collaborative Editing: Real-time multi-user editing of a graph (this would require a backend architecture).
+    Custom Prompts: Allowing advanced users to edit the system prompts used for generating explanations and keywords.

@@ -1,0 +1,445 @@
+/* App.css - Main styles for Concept Graph Explorer */
+
+/* More specific reset that doesn't interfere with React Flow */
+html, body, #root {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  height: 100%;
+  width: 100%;
+  overflow: hidden;
+}
+
+/* Reset for our app components only, not React Flow */
+.App, .app-layout, .app-header, .app-content {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* React Flow node text styling */
+.react-flow__node-default {
+  color: #333 !important;
+}
+
+.react-flow__node-input {
+  color: #333 !important;
+}
+
+.react-flow__node-output {
+  color: #333 !important;
+}
+
+/* Ensure all React Flow node text is visible */
+.react-flow__node {
+  color: #333 !important;
+}
+
+.react-flow__node .react-flow__node-label {
+  color: #333 !important;
+}
+
+.App {
+  height: 100vh;
+  width: 100vw;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Layout Components */
+.app-layout {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.app-header {
+  height: 60px;
+  background: #2c3e50;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 20px;
+  border-bottom: 2px solid #34495e;
+}
+
+.header-left h1 {
+  font-size: 24px;
+  font-weight: 600;
+}
+
+.header-center .main-nav {
+  display: flex;
+  gap: 15px;
+}
+
+.nav-button {
+  background: #3498db;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: background 0.2s;
+}
+
+.nav-button:hover {
+  background: #2980b9;
+}
+
+.header-right {
+  display: flex;
+  gap: 10px;
+}
+
+.tool-button {
+  background: #e74c3c;
+  color: white;
+  border: none;
+  padding: 8px 12px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 16px;
+  transition: background 0.2s;
+}
+
+.tool-button:hover {
+  background: #c0392b;
+}
+
+.tool-button.disabled {
+  background: #7f8c8d;
+  cursor: not-allowed;
+}
+
+.tool-button.active {
+  background: #27ae60;
+}
+
+.app-content {
+  flex: 1;
+  position: relative;
+  display: flex;
+}
+
+/* Settings Panel */
+.settings-panel {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  width: 400px;
+  background: white;
+  border: 1px solid #bdc3c7;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  z-index: 1000;
+  color: #333;
+}
+
+.settings-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px 20px;
+  background: #ecf0f1;
+  border-bottom: 1px solid #bdc3c7;
+  border-radius: 8px 8px 0 0;
+}
+
+.settings-header h3 {
+  margin: 0;
+  color: #2c3e50;
+}
+
+.close-button {
+  background: none;
+  border: none;
+  font-size: 20px;
+  cursor: pointer;
+  color: #7f8c8d;
+}
+
+.close-button:hover {
+  color: #e74c3c;
+}
+
+.settings-content {
+  padding: 20px;
+  color: #333;
+}
+
+.setting-group {
+  margin-bottom: 20px;
+}
+
+.setting-group h4 {
+  margin-bottom: 10px;
+  color: #2c3e50;
+}
+
+.setting-group label {
+  display: block;
+  margin-bottom: 8px;
+  cursor: pointer;
+  color: #333;
+  font-size: 14px;
+}
+
+.setting-group input[type="radio"] {
+  margin-right: 8px;
+}
+
+.setting-group input[type="checkbox"] {
+  margin-right: 8px;
+}
+
+.setting-group input[type="color"] {
+  margin-right: 10px;
+  width: 40px;
+  height: 30px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.setting-group span {
+  color: #333;
+}
+
+/* API Key Management */
+.provider-selection {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.provider-option {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 12px;
+  border-radius: 6px;
+  border: 1px solid #dfe6e9;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+}
+
+.provider-option:hover {
+  background-color: #f7f9fa;
+  border-color: #a4b0be;
+}
+
+.provider-option.selected {
+  background-color: #e9f5ff;
+  border-color: #3498db;
+  font-weight: bold;
+}
+
+.api-key-section {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.api-key-input-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.api-key-input-group > label {
+  font-size: 14px;
+  color: #2c3e50;
+  font-weight: 500;
+}
+
+.api-key-input-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.api-key-input-wrapper input[type="password"] {
+  flex-grow: 1;
+  padding: 8px 12px;
+  border: 1px solid #bdc3c7;
+  border-radius: 4px;
+  font-size: 14px;
+  transition: border-color 0.2s;
+}
+
+.api-key-input-wrapper input[type="password"]:focus {
+  outline: none;
+  border-color: #3498db;
+  box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.2);
+}
+
+.api-key-input-wrapper input.invalid {
+  border-color: #e74c3c;
+  background-color: #fff2f2;
+}
+
+.validate-button {
+  padding: 8px 12px;
+  border: none;
+  border-radius: 4px;
+  background: #3498db;
+  color: white;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background 0.2s;
+  white-space: nowrap;
+}
+
+.validate-button:hover:not(:disabled) {
+  background: #2980b9;
+}
+
+.validate-button:disabled {
+  background: #95a5a6;
+  cursor: not-allowed;
+}
+
+.validation-status {
+  height: 16px;
+  font-size: 12px;
+}
+
+.valid-indicator {
+  color: #27ae60;
+  font-weight: bold;
+}
+
+.error-message {
+  color: #e74c3c;
+  font-size: 12px;
+}
+
+.help-text {
+  font-size: 12px;
+  color: #7f8c8d;
+  margin: 2px 0 0 0;
+}
+
+/* Node Detail Sidebar */
+.node-detail-sidebar {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  width: 350px;
+  background: white;
+  border: 1px solid #bdc3c7;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  z-index: 1000;
+  max-height: calc(100vh - 120px);
+  overflow-y: auto;
+  color: #333;
+}
+
+.sidebar-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px 20px;
+  background: #ecf0f1;
+  border-bottom: 1px solid #bdc3c7;
+  border-radius: 8px 8px 0 0;
+}
+
+.sidebar-header h3 {
+  margin: 0;
+  color: #2c3e50;
+}
+
+.sidebar-content {
+  padding: 20px;
+}
+
+.detail-section {
+  margin-bottom: 25px;
+}
+
+.detail-section h4 {
+  margin-bottom: 15px;
+  color: #2c3e50;
+  border-bottom: 1px solid #ecf0f1;
+  padding-bottom: 5px;
+}
+
+.detail-item {
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+}
+
+.detail-item label {
+  min-width: 60px;
+  font-weight: 500;
+  color: #34495e;
+}
+
+.detail-item input,
+.detail-item select {
+  flex: 1;
+  margin-left: 10px;
+  padding: 6px 10px;
+  border: 1px solid #bdc3c7;
+  border-radius: 4px;
+}
+
+.detail-item span {
+  margin-left: 10px;
+  color: #7f8c8d;
+  font-family: monospace;
+}
+
+.detail-section textarea {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #bdc3c7;
+  border-radius: 4px;
+  resize: vertical;
+  font-family: inherit;
+}
+
+.position-inputs {
+  display: flex;
+  gap: 15px;
+}
+
+.position-inputs .detail-item {
+  flex: 1;
+}
+
+.action-button {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  margin-right: 10px;
+  margin-bottom: 10px;
+  transition: background 0.2s;
+}
+
+.action-button.save {
+  background: #27ae60;
+  color: white;
+}
+
+.action-button.save:hover {
+  background: #219a52;
+}
+
+.action-button.delete {
+  background: #e74c3c;
+  color: white;
+}
+
+.action-button.delete:hover {
+  background: #c0392b;
+}
