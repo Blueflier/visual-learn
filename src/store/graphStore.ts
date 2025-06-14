@@ -5,6 +5,7 @@ import type {
   ConceptNode,
   ConceptEdge,
 } from '../types';
+import { sampleGraphData } from '../utils/sampleData';
 
 interface Actions {
     addNode: (node: ConceptNode) => void;
@@ -24,10 +25,7 @@ interface Actions {
 export const useGraphStore = create<AppState & Actions>()(
   persist(
     (set, get) => ({
-      graphData: {
-        nodes: [],
-        edges: [],
-      },
+      graphData: sampleGraphData,
       viewState: {
         zoom: 1,
         pan: { x: 0, y: 0 },
