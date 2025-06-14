@@ -1,5 +1,8 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback, useMemo } from 'react';
 import { useGraphStore } from '../store/graphStore';
+import { useDebounce } from '../hooks/useDebounce';
+import type { ConceptEdge } from '../types';
+import '../styles/EdgeDetailSidebar.css';
 
 const EdgeDetailSidebar = () => {
   const { 
@@ -14,11 +17,23 @@ const EdgeDetailSidebar = () => {
   } = useGraphStore();
 
   const [label, setLabel] = useState('');
+  const [isEditing, setIsEditing] = useState(false);
+
+  // Memoize source and target node lookups to prevent unnecessary recalculations
+  const { sourceNode, targetNode } = useMemo(() => {
+    if (!selectedEdge) return { sourceNode: null, targetNode: null };
+    
+    return {
+      sourceNode: graphData.nodes.find(node => node.id === selectedEdge.source) || null,
+      targetNode: graphData.nodes.find(node => node.id === selectedEdge.target) || null,
+    };
+  }, [selectedEdge, graphData.nodes]);
 
   // Update local state when selected edge changes
   useEffect(() => {
     if (selectedEdge) {
       setLabel(selectedEdge.label || '');
+      setIsEditing(false);
     }
   }, [selectedEdge]);
 
@@ -29,27 +44,41 @@ const EdgeDetailSidebar = () => {
     }
   }, [selectedEdge, isDetailSidebarOpen, toggleDetailSidebar]);
 
-  if (!selectedEdge) return null;
-
-  // Find source and target node details
-  const sourceNode = graphData.nodes.find(node => node.id === selectedEdge.source);
-  const targetNode = graphData.nodes.find(node => node.id === selectedEdge.target);
-
-  const handleClose = () => {
+  // Memoized handlers to prevent unnecessary re-renders
+  const handleClose = useCallback(() => {
     setSelectedEdgeId(null);
     if (isDetailSidebarOpen) {
       toggleDetailSidebar();
     }
-  };
+  }, [setSelectedEdgeId, isDetailSidebarOpen, toggleDetailSidebar]);
 
-  const handleSave = () => {
+  // Debounced update function for smooth real-time editing
+  const debouncedUpdateEdge = useDebounce((edgeId: string, updates: Partial<ConceptEdge>) => {
+    updateEdge(edgeId, updates);
+  }, 300);
+
+  const handleSave = useCallback(() => {
     if (selectedEdgeId) {
-      updateEdge(selectedEdgeId, { label: label.trim() || undefined });
+      const trimmedLabel = label.trim();
+      updateEdge(selectedEdgeId, { 
+        label: trimmedLabel || undefined 
+      });
+      setIsEditing(false);
     }
-  };
+  }, [selectedEdgeId, label, updateEdge]);
 
-  const handleDelete = () => {
-    if (selectedEdgeId) {
+  // Auto-save with debouncing for real-time updates
+  const handleAutoSave = useCallback(() => {
+    if (selectedEdgeId && isEditing) {
+      const trimmedLabel = label.trim();
+      debouncedUpdateEdge(selectedEdgeId, { 
+        label: trimmedLabel || undefined 
+      });
+    }
+  }, [selectedEdgeId, label, isEditing, debouncedUpdateEdge]);
+
+  const handleDelete = useCallback(() => {
+    if (selectedEdgeId && selectedEdge) {
       const sourceTitle = sourceNode ? sourceNode.title : selectedEdge.source;
       const targetTitle = targetNode ? targetNode.title : selectedEdge.target;
       const edgeLabel = selectedEdge.label ? ` "${selectedEdge.label}"` : '';
@@ -61,17 +90,51 @@ const EdgeDetailSidebar = () => {
         handleClose();
       }
     }
-  };
+  }, [selectedEdgeId, selectedEdge, sourceNode, targetNode, removeEdge, handleClose]);
 
-  const handleLabelChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleLabelChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     setLabel(e.target.value);
-  };
+    if (!isEditing) {
+      setIsEditing(true);
+    }
+    // Trigger auto-save after a brief delay
+    handleAutoSave();
+  }, [isEditing, handleAutoSave]);
 
-  const handleKeyPress = (e: React.KeyboardEvent) => {
+  const handleKeyPress = useCallback((e: React.KeyboardEvent) => {
     if (e.key === 'Enter') {
       handleSave();
+    } else if (e.key === 'Escape') {
+      // Reset to original value on escape
+      if (selectedEdge) {
+        setLabel(selectedEdge.label || '');
+        setIsEditing(false);
+      }
     }
-  };
+  }, [handleSave, selectedEdge]);
+
+  const handleInputFocus = useCallback(() => {
+    setIsEditing(true);
+  }, []);
+
+  const handleInputBlur = useCallback(() => {
+    // Auto-save on blur if there are changes
+    if (isEditing) {
+      handleSave();
+    }
+  }, [isEditing, handleSave]);
+
+  // Memoized connection display to prevent unnecessary recalculations
+  const connectionDisplay = useMemo(() => {
+    if (!selectedEdge) return null;
+    
+    return {
+      sourceTitle: sourceNode ? sourceNode.title : selectedEdge.source,
+      targetTitle: targetNode ? targetNode.title : selectedEdge.target,
+    };
+  }, [selectedEdge, sourceNode, targetNode]);
+
+  if (!selectedEdge) return null;
 
   return (
     <div className="edge-detail-sidebar">
@@ -91,13 +154,23 @@ const EdgeDetailSidebar = () => {
           </div>
           <div className="detail-item">
             <label>Label:</label>
-            <input 
-              type="text" 
-              value={label}
-              onChange={handleLabelChange}
-              onKeyPress={handleKeyPress}
-              placeholder="Enter edge label (e.g., 'relates to', 'depends on')"
-            />
+            <div className="input-container">
+              <input 
+                type="text" 
+                value={label}
+                onChange={handleLabelChange}
+                onKeyDown={handleKeyPress}
+                onFocus={handleInputFocus}
+                onBlur={handleInputBlur}
+                placeholder="Enter edge label (e.g., 'relates to', 'depends on')"
+                className={isEditing ? 'editing' : ''}
+              />
+              {isEditing && (
+                <div className="edit-indicators">
+                  <span className="edit-hint">Press Enter to save, Esc to cancel</span>
+                </div>
+              )}
+            </div>
           </div>
         </div>
 
@@ -106,31 +179,34 @@ const EdgeDetailSidebar = () => {
           <div className="detail-item">
             <label>From:</label>
             <span className="node-reference">
-              {sourceNode ? sourceNode.title : selectedEdge.source}
+              {connectionDisplay?.sourceTitle}
             </span>
           </div>
           <div className="detail-item">
             <label>To:</label>
             <span className="node-reference">
-              {targetNode ? targetNode.title : selectedEdge.target}
+              {connectionDisplay?.targetTitle}
             </span>
           </div>
         </div>
 
         <div className="detail-section">
           <h4>Actions</h4>
-          <button 
-            className="action-button save"
-            onClick={handleSave}
-          >
-            Save Changes
-          </button>
-          <button 
-            className="action-button delete"
-            onClick={handleDelete}
-          >
-            Delete Edge
-          </button>
+          <div className="action-buttons">
+            <button 
+              className={`action-button save ${isEditing ? 'highlight' : ''}`}
+              onClick={handleSave}
+              disabled={!isEditing}
+            >
+              {isEditing ? 'Save Changes' : 'Saved'}
+            </button>
+            <button 
+              className="action-button delete"
+              onClick={handleDelete}
+            >
+              Delete Edge
+            </button>
+          </div>
         </div>
       </div>
     </div>

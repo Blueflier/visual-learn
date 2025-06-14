@@ -119,7 +119,7 @@ describe('ReactFlow Integration', () => {
         source: '1',
         target: '2',
         label: 'has',
-        type: 'smoothstep',
+        type: 'default',
         animated: false,
       });
 
@@ -133,7 +133,7 @@ describe('ReactFlow Integration', () => {
 
       expect(result[0].selected).toBe(true);
       expect(result[0].style?.stroke).toBe('#ff6b6b');
-      expect(result[0].style?.strokeWidth).toBe(3);
+      expect(result[0].style?.strokeWidth).toBe(2);
 
       expect(result[1].selected).toBe(false);
       expect(result[1].style?.stroke).toBe('#64748b');

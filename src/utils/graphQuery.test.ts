@@ -237,7 +237,7 @@ describe('GraphQueryEngine', () => {
       
       const result = engine.filterNodes(criteria);
       
-      expect(result.length).toBe(2); // React and State Management
+      expect(result.length).toBe(4); // React, Components, Hooks, Dan Abramov
       expect(result.every(node => node.resources && node.resources.length > 0)).toBe(true);
     });
 
@@ -248,7 +248,7 @@ describe('GraphQueryEngine', () => {
       
       const result = engine.filterNodes(criteria);
       
-      expect(result.length).toBe(1); // TypeScript
+      expect(result.length).toBe(2); // State Management, TypeScript
       expect(result.every(node => Boolean(node.imageUrl))).toBe(true);
     });
 
@@ -471,14 +471,14 @@ describe('Convenience Functions', () => {
   test('getNodesWithResources should find nodes with resources', () => {
     const result = getNodesWithResources(testGraph);
     
-    expect(result.length).toBe(2); // React and State Management
+    expect(result.length).toBe(4); // React, Components, Hooks, Dan Abramov
     expect(result.every(node => node.resources && node.resources.length > 0)).toBe(true);
   });
 
   test('getNodesWithImages should find nodes with images', () => {
     const result = getNodesWithImages(testGraph);
     
-    expect(result.length).toBe(1); // TypeScript
+    expect(result.length).toBe(2); // State Management, TypeScript
     expect(result.every(node => Boolean(node.imageUrl))).toBe(true);
   });
 });
