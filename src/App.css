@@ -39,6 +39,58 @@ html, body, #root {
   color: #333 !important;
 }
 
+/* React Flow Controls Styling - Fix SVG visibility */
+.react-flow__controls {
+  background: rgba(255, 255, 255, 0.95) !important;
+  border: 1px solid #e5e7eb !important;
+  border-radius: 8px !important;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1) !important;
+  backdrop-filter: blur(8px) !important;
+}
+
+.react-flow__controls-button {
+  background: transparent !important;
+  border: none !important;
+  border-bottom: 1px solid #e5e7eb !important;
+  border-radius: 0 !important;
+  width: 32px !important;
+  height: 32px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  transition: all 0.2s ease !important;
+}
+
+.react-flow__controls-button:last-child {
+  border-bottom: none !important;
+}
+
+.react-flow__controls-button:hover {
+  background: rgba(59, 130, 246, 0.1) !important;
+}
+
+.react-flow__controls-button svg {
+  fill: #374151 !important;
+  stroke: #374151 !important;
+  width: 16px !important;
+  height: 16px !important;
+}
+
+.react-flow__controls-button:hover svg {
+  fill: #1f2937 !important;
+  stroke: #1f2937 !important;
+}
+
+/* Ensure controls are always visible with proper contrast */
+.react-flow__controls-button:disabled {
+  opacity: 0.5 !important;
+}
+
+.react-flow__controls-button:disabled svg {
+  fill: #9ca3af !important;
+  stroke: #9ca3af !important;
+}
+
 .App {
   height: 100vh;
   width: 100vw;
