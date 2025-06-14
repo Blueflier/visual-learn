@@ -1,8 +1,8 @@
-import { useAppStore } from '../store/appStore';
+import { useGraphStore } from '../store/graphStore';
 import ProviderSettings from './settings/ProviderSettings';
 
 const SettingsPanel = () => {
-  const { isSettingsPanelOpen, toggleSettingsPanel } = useAppStore();
+  const { isSettingsPanelOpen, toggleSettingsPanel } = useGraphStore();
 
   if (!isSettingsPanelOpen) return null;
 

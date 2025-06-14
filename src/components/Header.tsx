@@ -1,7 +1,7 @@
-import { useAppStore } from '../store/appStore';
+import { useGraphStore } from '../store/graphStore';
 
 const Header = () => {
-  const { toggleSettingsPanel, toggleDetailSidebar, selectedNode } = useAppStore();
+  const { toggleSettingsPanel, toggleDetailSidebar, selectedNode } = useGraphStore();
 
   return (
     <header className="app-header">

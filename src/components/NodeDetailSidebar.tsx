@@ -1,8 +1,8 @@
 import { useEffect } from 'react';
-import { useAppStore } from '../store/appStore';
+import { useGraphStore } from '../store/graphStore';
 
 const NodeDetailSidebar = () => {
-  const { selectedNode, isDetailSidebarOpen, toggleDetailSidebar, setSelectedNode } = useAppStore();
+  const { selectedNode, isDetailSidebarOpen, toggleDetailSidebar, setSelectedNodeId } = useGraphStore();
 
   // Auto-open sidebar when a node is selected
   useEffect(() => {
@@ -14,7 +14,7 @@ const NodeDetailSidebar = () => {
   if (!selectedNode) return null;
 
   const handleClose = () => {
-    setSelectedNode(null);
+    setSelectedNodeId(null);
     if (isDetailSidebarOpen) {
       toggleDetailSidebar();
     }
