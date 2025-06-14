@@ -5,11 +5,6 @@
 export type ConceptType = 'Field' | 'Theory' | 'Algorithm' | 'Tool' | 'Person';
 
 /**
- * Defines the difficulty level of a concept.
- */
-export type ConceptDifficulty = 'Beginner' | 'Intermediate' | 'Advanced';
-
-/**
  * Represents a single concept node in the graph.
  * This is the core data structure for a concept.
  */
@@ -25,8 +20,6 @@ export type ConceptNode = {
   explanation: string;
   /** The type of the concept. */
   conceptType?: ConceptType;
-  /** The difficulty level of the concept. */
-  difficulty?: ConceptDifficulty;
   /** The (x, y) coordinates of the node on the canvas. */
   position?: { x: number; y: number };
   /** The date and time when the concept was created. */
@@ -40,26 +33,29 @@ export type ConceptNode = {
 };
 
 /**
- * Represents a directional link between two concept nodes.
+ * Represents a connection between two concept nodes.
  */
-export interface ConceptEdge {
+export type ConceptEdge = {
+  [key: string]: unknown; // Index signature for React Flow compatibility
   /** A unique identifier for the edge. */
   id: string;
   /** The ID of the source node. */
   source: string;
   /** The ID of the target node. */
   target: string;
-  /** A label describing the relationship between the source and target nodes. */
+  /** An optional label for the edge. */
   label?: string;
-}
+};
 
 /**
  * Represents the entire concept graph, including all nodes and edges.
  */
-export interface ConceptGraph {
+export type ConceptGraph = {
+  /** All nodes in the graph. */
   nodes: ConceptNode[];
+  /** All edges in the graph. */
   edges: ConceptEdge[];
-}
+};
 
 /**
  * Represents the state of the graph view.

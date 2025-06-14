@@ -1,19 +1,19 @@
 import type { Node, Edge, NodeChange, EdgeChange, Connection } from '@xyflow/react';
-import type { ConceptNode, ConceptEdge, ConceptGraph, ConceptType, ConceptDifficulty } from '../types';
+import type { ConceptNode, ConceptEdge, ConceptGraph, ConceptType } from '../types';
 
 /**
- * Extended React Flow node type that carries ConceptNode data
+ * Extended node type for React Flow with concept data
  */
-export type ConceptFlowNode = Node<ConceptNode & { label: string }>;
+export interface ConceptFlowNode extends Node {
+  data: ConceptNode & { label: string };
+}
 
 /**
- * Extended React Flow edge type with concept-specific styling
+ * Extended edge type for React Flow with concept data
  */
-export type ConceptFlowEdge = Edge<{ 
-  label?: string;
-  conceptType?: string;
-  animated?: boolean;
-}>;
+export interface ConceptFlowEdge extends Edge {
+  data?: Record<string, unknown>;
+}
 
 /**
  * Styling configuration for different concept types
@@ -57,31 +57,6 @@ const CONCEPT_TYPE_STYLES: Record<ConceptType, {
 };
 
 /**
- * Styling configuration for different difficulty levels
- */
-const DIFFICULTY_STYLES: Record<ConceptDifficulty, {
-  opacity: number;
-  fontSize: string;
-  fontWeight: string;
-}> = {
-  'Beginner': {
-    opacity: 0.8,
-    fontSize: '12px',
-    fontWeight: 'normal',
-  },
-  'Intermediate': {
-    opacity: 0.9,
-    fontSize: '14px',
-    fontWeight: '500',
-  },
-  'Advanced': {
-    opacity: 1.0,
-    fontSize: '16px',
-    fontWeight: 'bold',
-  },
-};
-
-/**
  * Convert ConceptNode array to React Flow nodes with appropriate styling
  */
 export function convertToReactFlowNodes(
@@ -90,7 +65,6 @@ export function convertToReactFlowNodes(
 ): ConceptFlowNode[] {
   return nodes.map(node => {
     const conceptTypeStyle = node.conceptType ? CONCEPT_TYPE_STYLES[node.conceptType] : CONCEPT_TYPE_STYLES['Theory'];
-    const difficultyStyle = node.difficulty ? DIFFICULTY_STYLES[node.difficulty] : DIFFICULTY_STYLES['Beginner'];
     const isSelected = selectedNodeId === node.id;
 
     return {
@@ -110,13 +84,13 @@ export function convertToReactFlowNodes(
         minWidth: '120px',
         maxWidth: '200px',
         color: conceptTypeStyle.textColor,
-        fontSize: difficultyStyle.fontSize,
-        fontWeight: difficultyStyle.fontWeight,
-        opacity: difficultyStyle.opacity,
+        fontSize: '14px',
+        fontWeight: '500',
+        opacity: 1.0,
         boxShadow: isSelected ? '0 0 10px rgba(0,0,0,0.3)' : '0 2px 4px rgba(0,0,0,0.1)',
         transition: 'all 0.2s ease',
       },
-      className: `concept-node concept-${node.conceptType?.toLowerCase() || 'theory'} difficulty-${node.difficulty?.toLowerCase() || 'beginner'}${isSelected ? ' selected' : ''}`,
+      className: `concept-node concept-${node.conceptType?.toLowerCase() || 'theory'}${isSelected ? ' selected' : ''}`,
     };
   });
 }
@@ -136,29 +110,27 @@ export function convertToReactFlowEdges(
       source: edge.source,
       target: edge.target,
       label: edge.label,
-      type: 'smoothstep',
+      type: 'default',
       animated: false,
       selected: isSelected,
       style: {
         stroke: isSelected ? '#ff6b6b' : '#64748b',
-        strokeWidth: isSelected ? 3 : 2,
+        strokeWidth: 2,
         opacity: 0.8,
       },
       labelStyle: {
         fontSize: '12px',
         fontWeight: '500',
         fill: '#374151',
-        backgroundColor: 'rgba(255, 255, 255, 0.8)',
-        padding: '2px 4px',
-        borderRadius: '4px',
       },
       labelBgStyle: {
-        fill: 'rgba(255, 255, 255, 0.9)',
-        fillOpacity: 0.9,
+        fill: 'white',
+        fillOpacity: 0.8,
       },
       data: {
+        ...edge,
         label: edge.label,
-        conceptType: 'relationship',
+        conceptType: 'edge',
         animated: false,
       },
     };
@@ -298,14 +270,13 @@ export const GraphExporter = {
    * Export as CSV (nodes only)
    */
   toCSV(graph: ConceptGraph): string {
-    const headers = ['id', 'title', 'explanation', 'keywords', 'conceptType', 'difficulty', 'resources'];
+    const headers = ['id', 'title', 'explanation', 'keywords', 'conceptType', 'resources'];
     const rows = graph.nodes.map(node => [
       node.id,
       `"${node.title}"`,
       `"${node.explanation}"`,
       `"${node.keywords.join(', ')}"`,
       node.conceptType || '',
-      node.difficulty || '',
       `"${node.resources.join(', ')}"`,
     ]);
 
@@ -382,7 +353,6 @@ export const GraphImporter = {
         explanation: node.explanation || '',
         keywords: Array.isArray(node.keywords) ? node.keywords : [],
         conceptType: node.conceptType,
-        difficulty: node.difficulty,
         position: node.position || { x: 0, y: 0 },
         createdAt: node.createdAt ? new Date(node.createdAt) : new Date(),
         updatedAt: node.updatedAt ? new Date(node.updatedAt) : new Date(),
@@ -423,11 +393,10 @@ export const GraphImporter = {
         explanation: values[2] || '',
         keywords: values[3] ? values[3].split(',').map(k => k.trim()) : [],
         conceptType: values[4] as ConceptType || undefined,
-        difficulty: values[5] as ConceptDifficulty || undefined,
         position: { x: 0, y: 0 },
         createdAt: new Date(),
         updatedAt: new Date(),
-        resources: values[6] ? values[6].split(',').map(r => r.trim()) : [],
+        resources: values[5] ? values[5].split(',').map(r => r.trim()) : [],
       };
       nodes.push(node);
     }

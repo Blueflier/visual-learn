@@ -16,7 +16,6 @@ const ConceptNodeComponent: React.FC<NodeProps> = ({
   const {
     title,
     conceptType,
-    difficulty,
     keywords,
     explanation,
   } = conceptData;
@@ -30,16 +29,6 @@ const ConceptNodeComponent: React.FC<NodeProps> = ({
       case 'Tool': return '🔧';
       case 'Person': return '👤';
       default: return '📝';
-    }
-  };
-
-  // Get difficulty color
-  const getDifficultyColor = (diff?: string) => {
-    switch (diff) {
-      case 'Beginner': return '#4ade80';
-      case 'Intermediate': return '#f59e0b';
-      case 'Advanced': return '#ef4444';
-      default: return '#6b7280';
     }
   };
 
@@ -59,7 +48,7 @@ const ConceptNodeComponent: React.FC<NodeProps> = ({
         overflow: 'hidden',
       }}
     >
-      {/* Header with concept type and difficulty */}
+      {/* Header with concept type */}
       <div 
         style={{
           display: 'flex',
@@ -86,23 +75,6 @@ const ConceptNodeComponent: React.FC<NodeProps> = ({
             {conceptType || 'Concept'}
           </span>
         </div>
-        
-        {difficulty && (
-          <div
-            style={{
-              fontSize: '10px',
-              fontWeight: '600',
-              color: 'white',
-              background: getDifficultyColor(difficulty),
-              padding: '2px 6px',
-              borderRadius: '10px',
-              textTransform: 'uppercase',
-              letterSpacing: '0.3px',
-            }}
-          >
-            {difficulty}
-          </div>
-        )}
       </div>
 
       {/* Main content */}
@@ -163,7 +135,7 @@ const ConceptNodeComponent: React.FC<NodeProps> = ({
                 style={{
                   fontSize: '10px',
                   fontWeight: '500',
-                  color: '#9ca3af',
+                  color: '#6b7280',
                   background: '#f9fafb',
                   padding: '2px 6px',
                   borderRadius: '6px',
@@ -183,9 +155,9 @@ const ConceptNodeComponent: React.FC<NodeProps> = ({
         position={Position.Top}
         style={{
           background: '#6b7280',
-          border: '2px solid white',
           width: '8px',
           height: '8px',
+          border: '2px solid white',
         }}
       />
       <Handle
@@ -193,29 +165,9 @@ const ConceptNodeComponent: React.FC<NodeProps> = ({
         position={Position.Bottom}
         style={{
           background: '#6b7280',
-          border: '2px solid white',
           width: '8px',
           height: '8px',
-        }}
-      />
-      <Handle
-        type="target"
-        position={Position.Left}
-        style={{
-          background: '#6b7280',
           border: '2px solid white',
-          width: '8px',
-          height: '8px',
-        }}
-      />
-      <Handle
-        type="source"
-        position={Position.Right}
-        style={{
-          background: '#6b7280',
-          border: '2px solid white',
-          width: '8px',
-          height: '8px',
         }}
       />
     </div>

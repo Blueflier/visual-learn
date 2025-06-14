@@ -1,4 +1,4 @@
-import type { ConceptNode, ConceptEdge, ConceptGraph, ConceptType, ConceptDifficulty } from '../types';
+import type { ConceptNode, ConceptEdge, ConceptGraph, ConceptType } from '../types';
 
 /**
  * Configuration options for graph queries and filtering
@@ -30,8 +30,6 @@ const DEFAULT_QUERY_CONFIG: QueryConfig = {
 export interface NodeFilterCriteria {
   /** Filter by concept types */
   conceptTypes?: ConceptType[];
-  /** Filter by difficulty levels */
-  difficulties?: ConceptDifficulty[];
   /** Filter by keywords (any match) */
   keywords?: string[];
   /** Filter by creation date range */
@@ -299,13 +297,6 @@ export class GraphQueryEngine {
       // Check concept type filter
       if (criteria.conceptTypes && criteria.conceptTypes.length > 0) {
         if (!node.conceptType || !criteria.conceptTypes.includes(node.conceptType)) {
-          return;
-        }
-      }
-
-      // Check difficulty filter
-      if (criteria.difficulties && criteria.difficulties.length > 0) {
-        if (!node.difficulty || !criteria.difficulties.includes(node.difficulty)) {
           return;
         }
       }
@@ -609,13 +600,6 @@ export function findNodesByProperty<K extends keyof ConceptNode>(
  */
 export function getNodesByType(graph: ConceptGraph, types: ConceptType[]): ConceptNode[] {
   return graph.nodes.filter(node => node.conceptType && types.includes(node.conceptType));
-}
-
-/**
- * Get all nodes of specific difficulty levels
- */
-export function getNodesByDifficulty(graph: ConceptGraph, difficulties: ConceptDifficulty[]): ConceptNode[] {
-  return graph.nodes.filter(node => node.difficulty && difficulties.includes(node.difficulty));
 }
 
 /**

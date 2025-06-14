@@ -5,7 +5,6 @@ import {
   quickSearch,
   findNodesByProperty,
   getNodesByType,
-  getNodesByDifficulty,
   getNodesInDateRange,
   getNodesWithResources,
   getNodesWithImages,
@@ -13,28 +12,28 @@ import {
 } from './graphQuery';
 import type { ConceptNode, ConceptEdge, ConceptGraph } from '../types';
 
-// Test data setup
-const createTestNode = (
+// Test helper functions
+function createTestNode(
   id: string,
   title: string,
   keywords: string[] = [],
   conceptType?: 'Field' | 'Theory' | 'Algorithm' | 'Tool' | 'Person',
-  difficulty?: 'Beginner' | 'Intermediate' | 'Advanced',
   resources: string[] = [],
   imageUrl?: string
-): ConceptNode => ({
-  id,
-  title,
-  explanation: `Explanation for ${title}`,
-  keywords,
-  conceptType,
-  difficulty,
-  position: { x: 0, y: 0 },
-  createdAt: new Date('2024-01-01'),
-  updatedAt: new Date('2024-01-02'),
-  resources,
-  imageUrl,
-});
+): ConceptNode {
+  return {
+    id,
+    title,
+    explanation: `Explanation for ${title}`,
+    keywords,
+    conceptType,
+    position: { x: 0, y: 0 },
+    createdAt: new Date('2024-01-01'),
+    updatedAt: new Date('2024-01-01'),
+    resources,
+    imageUrl,
+  };
+}
 
 const createTestEdge = (id: string, source: string, target: string, label?: string): ConceptEdge => ({
   id,
@@ -44,12 +43,12 @@ const createTestEdge = (id: string, source: string, target: string, label?: stri
 });
 
 const testNodes: ConceptNode[] = [
-  createTestNode('1', 'React', ['javascript', 'ui', 'library'], 'Tool', 'Beginner', ['https://react.dev']),
-  createTestNode('2', 'Components', ['ui', 'composition'], 'Theory', 'Beginner'),
-  createTestNode('3', 'State Management', ['state', 'data'], 'Theory', 'Intermediate', ['https://redux.js.org']),
-  createTestNode('4', 'Hooks', ['functions', 'state'], 'Algorithm', 'Intermediate'),
-  createTestNode('5', 'TypeScript', ['types', 'javascript'], 'Tool', 'Advanced', [], 'https://example.com/ts.png'),
-  createTestNode('6', 'Dan Abramov', ['person', 'developer'], 'Person', 'Advanced'),
+  createTestNode('1', 'React', ['javascript', 'ui', 'library'], 'Tool', ['https://react.dev']),
+  createTestNode('2', 'Components', ['ui', 'composition'], 'Theory', ['https://redux.js.org']),
+  createTestNode('3', 'State Management', ['state', 'data'], 'Theory', [], 'https://example.com/ts.png'),
+  createTestNode('4', 'Hooks', ['functions', 'state'], 'Algorithm', ['https://redux.js.org']),
+  createTestNode('5', 'TypeScript', ['types', 'javascript'], 'Tool', [], 'https://example.com/ts.png'),
+  createTestNode('6', 'Dan Abramov', ['person', 'developer'], 'Person', ['https://example.com/ts.png']),
 ];
 
 const testEdges: ConceptEdge[] = [
@@ -149,7 +148,7 @@ describe('GraphQueryEngine', () => {
     test('findShortestPath should return not found for disconnected nodes', () => {
       // Create a disconnected node
       const disconnectedGraph: ConceptGraph = {
-        nodes: [...testNodes, createTestNode('7', 'Isolated', [])],
+        nodes: [...testNodes, createTestNode('7', 'Isolated', [], 'Person')],
         edges: testEdges,
       };
       const disconnectedEngine = new GraphQueryEngine(disconnectedGraph);
@@ -218,17 +217,6 @@ describe('GraphQueryEngine', () => {
       expect(result.every(node => node.conceptType === 'Tool')).toBe(true);
     });
 
-    test('filterNodes should filter by difficulty', () => {
-      const criteria: NodeFilterCriteria = {
-        difficulties: ['Beginner'],
-      };
-      
-      const result = engine.filterNodes(criteria);
-      
-      expect(result.length).toBe(2); // React and Components
-      expect(result.every(node => node.difficulty === 'Beginner')).toBe(true);
-    });
-
     test('filterNodes should filter by keywords', () => {
       const criteria: NodeFilterCriteria = {
         keywords: ['javascript'],
@@ -267,13 +255,12 @@ describe('GraphQueryEngine', () => {
     test('filterNodes should combine multiple criteria', () => {
       const criteria: NodeFilterCriteria = {
         conceptTypes: ['Tool'],
-        difficulties: ['Beginner'],
       };
       
       const result = engine.filterNodes(criteria);
       
-      expect(result.length).toBe(1); // Only React
-      expect(result[0].title).toBe('React');
+      expect(result.length).toBe(2); // React and TypeScript
+      expect(result.every(node => node.conceptType === 'Tool')).toBe(true);
     });
   });
 
@@ -329,7 +316,7 @@ describe('GraphQueryEngine', () => {
     test('findSimilarNodes should find similar nodes', () => {
       // Add a similar node to React
       const similarGraph: ConceptGraph = {
-        nodes: [...testNodes, createTestNode('8', 'Vue', ['javascript', 'ui', 'framework'], 'Tool', 'Beginner')],
+        nodes: [...testNodes, createTestNode('8', 'Vue', ['javascript', 'ui', 'framework'], 'Tool')],
         edges: testEdges,
       };
       const similarEngine = new GraphQueryEngine(similarGraph, { similarityThreshold: 0.1 });
@@ -357,8 +344,8 @@ describe('GraphQueryEngine', () => {
       const similarGraph: ConceptGraph = {
         nodes: [
           ...testNodes,
-          createTestNode('8', 'Vue', ['javascript', 'ui'], 'Tool', 'Beginner'),
-          createTestNode('9', 'Angular', ['javascript', 'framework'], 'Tool', 'Intermediate'),
+          createTestNode('8', 'Vue', ['javascript', 'ui'], 'Tool'),
+          createTestNode('9', 'Angular', ['javascript', 'framework'], 'Tool'),
         ],
         edges: testEdges,
       };
@@ -463,13 +450,6 @@ describe('Convenience Functions', () => {
     )).toBe(true);
   });
 
-  test('getNodesByDifficulty should filter by difficulty levels', () => {
-    const result = getNodesByDifficulty(testGraph, ['Beginner']);
-    
-    expect(result.length).toBe(2); // React and Components
-    expect(result.every(node => node.difficulty === 'Beginner')).toBe(true);
-  });
-
   test('getNodesInDateRange should filter by date range', () => {
     const startDate = new Date('2023-12-31');
     const endDate = new Date('2024-01-02');
@@ -541,8 +521,6 @@ describe('Edge Cases and Error Handling', () => {
   test('should handle malformed filter criteria', () => {
     const result = engine.filterNodes({
       conceptTypes: [],
-      difficulties: [],
-      keywords: [],
     });
     
     expect(result.length).toBe(testNodes.length); // Should return all nodes

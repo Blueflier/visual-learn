@@ -10,14 +10,13 @@ import {
   GraphImporter,
   ReactFlowUtils,
 } from './reactFlowIntegration';
-import type { ConceptNode, ConceptEdge, ConceptGraph, ConceptType, ConceptDifficulty } from '../types';
+import type { ConceptNode, ConceptEdge, ConceptGraph, ConceptType } from '../types';
 
-// Test data
+// Test helper functions
 const createTestNode = (
   id: string,
   title: string,
   conceptType?: ConceptType,
-  difficulty?: ConceptDifficulty,
   position?: { x: number; y: number }
 ): ConceptNode => ({
   id,
@@ -25,11 +24,10 @@ const createTestNode = (
   explanation: `Explanation for ${title}`,
   keywords: ['test', 'keyword'],
   conceptType,
-  difficulty,
   position: position || { x: 0, y: 0 },
-  createdAt: new Date('2024-01-01'),
-  updatedAt: new Date('2024-01-01'),
-  resources: ['https://example.com'],
+  createdAt: new Date(),
+  updatedAt: new Date(),
+  resources: [],
 });
 
 const createTestEdge = (id: string, source: string, target: string, label?: string): ConceptEdge => ({
@@ -46,9 +44,9 @@ describe('ReactFlow Integration', () => {
 
   beforeEach(() => {
     testNodes = [
-      createTestNode('1', 'React', 'Tool', 'Beginner', { x: 100, y: 100 }),
-      createTestNode('2', 'Components', 'Theory', 'Intermediate', { x: 200, y: 200 }),
-      createTestNode('3', 'State Management', 'Algorithm', 'Advanced', { x: 300, y: 300 }),
+      createTestNode('1', 'React', 'Tool', { x: 100, y: 100 }),
+      createTestNode('2', 'Components', 'Theory', { x: 200, y: 200 }),
+      createTestNode('3', 'State Management', 'Algorithm', { x: 300, y: 300 }),
     ];
 
     testEdges = [
@@ -75,7 +73,6 @@ describe('ReactFlow Integration', () => {
           title: 'React',
           label: 'React',
           conceptType: 'Tool',
-          difficulty: 'Beginner',
         }),
       });
 
@@ -83,7 +80,6 @@ describe('ReactFlow Integration', () => {
       expect(result[0].style).toBeDefined();
       expect(result[0].className).toContain('concept-node');
       expect(result[0].className).toContain('concept-tool');
-      expect(result[0].className).toContain('difficulty-beginner');
     });
 
     it('should handle selected node styling', () => {
@@ -314,7 +310,7 @@ describe('ReactFlow Integration', () => {
     });
 
     it('should import from CSV', () => {
-      const csvString = 'id,title,explanation,keywords,conceptType,difficulty,resources\n1,React,A library,js,Tool,Beginner,https://react.dev';
+      const csvString = 'id,title,explanation,keywords,conceptType,resources\n1,React,A library,js,Tool,https://react.dev';
       const result = GraphImporter.fromCSV(csvString);
 
       expect(result).toHaveLength(1);
@@ -324,7 +320,6 @@ describe('ReactFlow Integration', () => {
         explanation: 'A library',
         keywords: ['js'],
         conceptType: 'Tool',
-        difficulty: 'Beginner',
         resources: ['https://react.dev'],
       });
     });
