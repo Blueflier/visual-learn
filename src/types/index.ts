@@ -73,14 +73,25 @@ export interface GraphViewState {
 
 /**
  * The main application state, combining graph data, view state, and user selection.
+ * Updated to support multi-selection while maintaining backward compatibility.
  */
 export interface AppState {
   graphData: ConceptGraph;
   viewState: GraphViewState;
+  
+  // Multi-selection arrays (primary selection state)
+  selectedNodeIds: string[];
+  selectedEdgeIds: string[];
+  
+  // Legacy single selection (computed from arrays for backward compatibility)
   selectedNodeId?: string | null;
   selectedEdgeId?: string | null;
+  
+  // Computed selected objects (derived from selection arrays)
   selectedNode: ConceptNode | null;
   selectedEdge: ConceptEdge | null;
+  
+  // UI state
   isSettingsPanelOpen: boolean;
   isDetailSidebarOpen: boolean;
 }

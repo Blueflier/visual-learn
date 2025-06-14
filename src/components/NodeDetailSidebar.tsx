@@ -1,13 +1,39 @@
 import { useGraphStore } from '../store/graphStore';
+import { useState, useEffect } from 'react';
+import type { ConceptType } from '../types';
 import '../styles/NodeDetailSidebar.css';
 
 const NodeDetailSidebar = () => {
-  const { selectedNode, isDetailSidebarOpen, setSelectedNodeId } = useGraphStore();
+  const { selectedNode, isDetailSidebarOpen, setSelectedNodeId, updateNode } = useGraphStore();
+  
+  // Local state for form inputs
+  const [formData, setFormData] = useState({
+    title: '',
+    conceptType: 'Theory' as ConceptType,
+    explanation: '',
+    positionX: 0,
+    positionY: 0,
+  });
+
+  // Update form data when selectedNode changes
+  useEffect(() => {
+    if (selectedNode) {
+      console.log('📋 NodeDetailSidebar: Updating form data for node:', selectedNode.title);
+      setFormData({
+        title: selectedNode.title || '',
+        conceptType: selectedNode.conceptType || 'Theory',
+        explanation: selectedNode.explanation || '',
+        positionX: selectedNode.position?.x ?? 0,
+        positionY: selectedNode.position?.y ?? 0,
+      });
+    }
+  }, [selectedNode]);
 
   console.log('📋 NodeDetailSidebar render:', {
     selectedNode: selectedNode ? selectedNode.title : 'null',
     isDetailSidebarOpen,
-    shouldRender: !(!selectedNode || !isDetailSidebarOpen)
+    shouldRender: !(!selectedNode || !isDetailSidebarOpen),
+    formTitle: formData.title
   });
 
   if (!selectedNode || !isDetailSidebarOpen) {
@@ -16,6 +42,35 @@ const NodeDetailSidebar = () => {
 
   const handleClose = () => {
     setSelectedNodeId(null); // This will automatically close the sidebar via the store
+  };
+
+  const handleInputChange = (field: keyof typeof formData, value: string | number) => {
+    setFormData(prev => ({
+      ...prev,
+      [field]: value
+    }));
+  };
+
+  const handleSave = () => {
+    if (selectedNode) {
+      updateNode(selectedNode.id, {
+        title: formData.title,
+        conceptType: formData.conceptType,
+        explanation: formData.explanation,
+        position: {
+          x: formData.positionX,
+          y: formData.positionY
+        }
+      });
+      console.log('📋 NodeDetailSidebar: Saved changes for node:', selectedNode.id);
+    }
+  };
+
+  const handleDelete = () => {
+    if (selectedNode && window.confirm(`Are you sure you want to delete "${selectedNode.title}"?`)) {
+      // TODO: Implement delete functionality
+      console.log('📋 NodeDetailSidebar: Delete requested for node:', selectedNode.id);
+    }
   };
 
   return (
@@ -38,14 +93,17 @@ const NodeDetailSidebar = () => {
             <label>Label:</label>
             <input 
               type="text" 
-              defaultValue={selectedNode.title}
+              value={formData.title}
+              onChange={(e) => handleInputChange('title', e.target.value)}
               placeholder="Enter node label"
             />
           </div>
           <div className="detail-item">
             <label>Type:</label>
-            <select defaultValue={selectedNode.conceptType || 'default'}>
-              <option value="default">Default</option>
+            <select 
+              value={formData.conceptType}
+              onChange={(e) => handleInputChange('conceptType', e.target.value as ConceptType)}
+            >
               <option value="Field">Field</option>
               <option value="Theory">Theory</option>
               <option value="Algorithm">Algorithm</option>
@@ -59,7 +117,8 @@ const NodeDetailSidebar = () => {
           <h4>Description</h4>
           <textarea 
             placeholder="Enter node description..."
-            defaultValue={selectedNode.explanation || ''}
+            value={formData.explanation}
+            onChange={(e) => handleInputChange('explanation', e.target.value)}
             rows={4}
           />
         </div>
@@ -71,14 +130,16 @@ const NodeDetailSidebar = () => {
               <label>X:</label>
               <input 
                 type="number" 
-                defaultValue={selectedNode.position?.x ?? 0}
+                value={formData.positionX}
+                onChange={(e) => handleInputChange('positionX', parseFloat(e.target.value) || 0)}
               />
             </div>
             <div className="detail-item">
               <label>Y:</label>
               <input 
                 type="number" 
-                defaultValue={selectedNode.position?.y ?? 0}
+                value={formData.positionY}
+                onChange={(e) => handleInputChange('positionY', parseFloat(e.target.value) || 0)}
               />
             </div>
           </div>
@@ -87,8 +148,12 @@ const NodeDetailSidebar = () => {
         <div className="detail-section">
           <h4>Actions</h4>
           <div className="action-buttons">
-            <button className="action-button save">Save Changes</button>
-            <button className="action-button delete">Delete Node</button>
+            <button className="action-button save" onClick={handleSave}>
+              Save Changes
+            </button>
+            <button className="action-button delete" onClick={handleDelete}>
+              Delete Node
+            </button>
           </div>
         </div>
       </div>
