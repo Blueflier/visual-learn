@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo } from 'react';
+import { useCallback, useMemo } from 'react';
 import {
   ReactFlow,
   Background,
@@ -15,8 +15,6 @@ import ConceptNodeComponent from './ConceptNode';
 import {
   convertToReactFlowNodes,
   convertToReactFlowEdges,
-  handleNodeChanges,
-  handleEdgeChanges,
   handleConnection,
   type ConceptFlowNode,
   type ConceptFlowEdge,
