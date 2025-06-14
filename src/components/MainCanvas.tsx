@@ -54,8 +54,8 @@ const MainCanvas = () => {
     changes.forEach(change => {
       switch (change.type) {
         case 'position':
-          if (change.position && change.dragging === false) {
-            // Only update position when dragging is complete
+          if (change.position) {
+            // Update position during dragging for smooth visual feedback
             updateNode(change.id, { position: change.position });
           }
           break;
