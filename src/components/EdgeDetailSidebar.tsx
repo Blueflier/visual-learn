@@ -9,7 +9,6 @@ const EdgeDetailSidebar = () => {
     selectedEdge, 
     selectedEdgeId,
     isDetailSidebarOpen, 
-    toggleDetailSidebar, 
     setSelectedEdgeId,
     updateEdge,
     removeEdge,
@@ -37,20 +36,10 @@ const EdgeDetailSidebar = () => {
     }
   }, [selectedEdge]);
 
-  // Auto-open sidebar when an edge is selected
-  useEffect(() => {
-    if (selectedEdge && !isDetailSidebarOpen) {
-      toggleDetailSidebar();
-    }
-  }, [selectedEdge, isDetailSidebarOpen, toggleDetailSidebar]);
-
   // Memoized handlers to prevent unnecessary re-renders
   const handleClose = useCallback(() => {
-    setSelectedEdgeId(null);
-    if (isDetailSidebarOpen) {
-      toggleDetailSidebar();
-    }
-  }, [setSelectedEdgeId, isDetailSidebarOpen, toggleDetailSidebar]);
+    setSelectedEdgeId(null); // This will automatically close the sidebar via the store
+  }, [setSelectedEdgeId]);
 
   // Debounced update function for smooth real-time editing
   const debouncedUpdateEdge = useDebounce((edgeId: string, updates: Partial<ConceptEdge>) => {
@@ -134,7 +123,15 @@ const EdgeDetailSidebar = () => {
     };
   }, [selectedEdge, sourceNode, targetNode]);
 
-  if (!selectedEdge) return null;
+  console.log('🔗 EdgeDetailSidebar render:', {
+    selectedEdge: selectedEdge ? `${selectedEdge.source} -> ${selectedEdge.target}` : 'null',
+    isDetailSidebarOpen,
+    shouldRender: !(!selectedEdge || !isDetailSidebarOpen)
+  });
+
+  if (!selectedEdge || !isDetailSidebarOpen) {
+    return null;
+  }
 
   return (
     <div className="edge-detail-sidebar">

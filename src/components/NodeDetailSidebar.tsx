@@ -1,23 +1,21 @@
-import { useEffect } from 'react';
 import { useGraphStore } from '../store/graphStore';
+import '../styles/NodeDetailSidebar.css';
 
 const NodeDetailSidebar = () => {
-  const { selectedNode, isDetailSidebarOpen, toggleDetailSidebar, setSelectedNodeId } = useGraphStore();
+  const { selectedNode, isDetailSidebarOpen, setSelectedNodeId } = useGraphStore();
 
-  // Auto-open sidebar when a node is selected
-  useEffect(() => {
-    if (selectedNode && !isDetailSidebarOpen) {
-      toggleDetailSidebar();
-    }
-  }, [selectedNode, isDetailSidebarOpen, toggleDetailSidebar]);
+  console.log('📋 NodeDetailSidebar render:', {
+    selectedNode: selectedNode ? selectedNode.title : 'null',
+    isDetailSidebarOpen,
+    shouldRender: !(!selectedNode || !isDetailSidebarOpen)
+  });
 
-  if (!selectedNode) return null;
+  if (!selectedNode || !isDetailSidebarOpen) {
+    return null;
+  }
 
   const handleClose = () => {
-    setSelectedNodeId(null);
-    if (isDetailSidebarOpen) {
-      toggleDetailSidebar();
-    }
+    setSelectedNodeId(null); // This will automatically close the sidebar via the store
   };
 
   return (
@@ -88,8 +86,10 @@ const NodeDetailSidebar = () => {
 
         <div className="detail-section">
           <h4>Actions</h4>
-          <button className="action-button save">Save Changes</button>
-          <button className="action-button delete">Delete Node</button>
+          <div className="action-buttons">
+            <button className="action-button save">Save Changes</button>
+            <button className="action-button delete">Delete Node</button>
+          </div>
         </div>
       </div>
     </div>

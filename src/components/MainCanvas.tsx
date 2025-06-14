@@ -1,4 +1,4 @@
-import { useCallback, useMemo } from 'react';
+import { useCallback, useMemo, useEffect } from 'react';
 import {
   ReactFlow,
   Background,
@@ -56,12 +56,12 @@ const MainCanvas = () => {
   const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
 
   // Sync React Flow state with store state when store changes
-  useMemo(() => {
+  useEffect(() => {
     const newNodes = convertToReactFlowNodes(graphData.nodes, selectedNodeId);
     setNodes(newNodes);
   }, [graphData.nodes, selectedNodeId, setNodes]);
 
-  useMemo(() => {
+  useEffect(() => {
     const newEdges = convertToReactFlowEdges(graphData.edges, selectedEdgeId);
     setEdges(newEdges);
   }, [graphData.edges, selectedEdgeId, setEdges]);
@@ -134,19 +134,34 @@ const MainCanvas = () => {
     _event: React.MouseEvent,
     node: ConceptFlowNode
   ) => {
+    console.log('🔵 Node clicked:', {
+      nodeId: node.id,
+      nodeTitle: node.data.title,
+      event: _event.type
+    });
     setSelectedNodeId(node.id);
-    setSelectedEdgeId(null); // Clear edge selection when selecting a node
-  }, [setSelectedNodeId, setSelectedEdgeId]);
+    // Don't call setSelectedEdgeId(null) here - let the store handle clearing the edge
+    console.log('🔵 After setSelectedNodeId called with:', node.id);
+  }, [setSelectedNodeId]);
 
   const handleEdgeClick = useCallback((
     _event: React.MouseEvent,
     edge: ConceptFlowEdge
   ) => {
+    console.log('🔗 Edge clicked:', {
+      edgeId: edge.id,
+      source: edge.source,
+      target: edge.target,
+      label: edge.label,
+      event: _event.type
+    });
     setSelectedEdgeId(edge.id);
-    setSelectedNodeId(null); // Clear node selection when selecting an edge
-  }, [setSelectedEdgeId, setSelectedNodeId]);
+    // Don't call setSelectedNodeId(null) here - let the store handle clearing the node
+    console.log('🔗 After setSelectedEdgeId called with:', edge.id);
+  }, [setSelectedEdgeId]);
 
   const handlePaneClick = useCallback(() => {
+    console.log('🌐 Pane clicked - clearing selections');
     setSelectedNodeId(null);
     setSelectedEdgeId(null);
   }, [setSelectedNodeId, setSelectedEdgeId]);

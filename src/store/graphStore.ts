@@ -218,15 +218,33 @@ export const useGraphStore = create<AppState & Actions>()(
           })),
         
         setSelectedNodeId: (nodeId: string | null) => {
+          console.log('🏪 Store: setSelectedNodeId called with:', nodeId);
           const state = get();
           const node = nodeId ? state.graphData.nodes.find(n => n.id === nodeId) || null : null;
-          set({ selectedNodeId: nodeId, selectedNode: node });
+          console.log('🏪 Store: Found node:', node ? node.title : 'null');
+          console.log('🏪 Store: Setting isDetailSidebarOpen to:', nodeId !== null);
+          set({ 
+            selectedNodeId: nodeId, 
+            selectedNode: node,
+            selectedEdgeId: null,
+            selectedEdge: null,
+            isDetailSidebarOpen: nodeId !== null
+          });
         },
 
         setSelectedEdgeId: (edgeId: string | null) => {
+          console.log('🏪 Store: setSelectedEdgeId called with:', edgeId);
           const state = get();
           const edge = edgeId ? state.graphData.edges.find(e => e.id === edgeId) || null : null;
-          set({ selectedEdgeId: edgeId, selectedEdge: edge });
+          console.log('🏪 Store: Found edge:', edge ? `${edge.source} -> ${edge.target}` : 'null');
+          console.log('🏪 Store: Setting isDetailSidebarOpen to:', edgeId !== null);
+          set({ 
+            selectedEdgeId: edgeId, 
+            selectedEdge: edge,
+            selectedNodeId: null,
+            selectedNode: null,
+            isDetailSidebarOpen: edgeId !== null
+          });
         },
         
         toggleSettingsPanel: () =>
