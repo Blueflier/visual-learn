@@ -1,0 +1,117 @@
+{
+  "version": "1.0.0",
+  "exportedAt": "2025-06-14T21:52:07.220Z",
+  "graphData": {
+    "nodes": [
+      {
+        "id": "1",
+        "title": "React",
+        "explanation": "A JavaScript library for building user interfaces",
+        "keywords": [
+          "JavaScript",
+          "UI",
+          "Library"
+        ],
+        "position": {
+          "x": 150,
+          "y": -315
+        },
+        "conceptType": "Tool",
+        "createdAt": "2025-06-14T21:33:34.291Z",
+        "updatedAt": "2025-06-14T21:39:35.018Z",
+        "resources": [
+          "https://react.dev/"
+        ]
+      },
+      {
+        "id": "2",
+        "title": "Components",
+        "explanation": "Reusable pieces of UI code that can have their own state.",
+        "keywords": [
+          "UI",
+          "Composition"
+        ],
+        "position": {
+          "x": 345,
+          "y": -15
+        },
+        "conceptType": "Theory",
+        "createdAt": "2025-06-14T21:33:34.291Z",
+        "updatedAt": "2025-06-14T21:45:22.668Z",
+        "resources": []
+      },
+      {
+        "id": "3",
+        "title": "State Management",
+        "explanation": "The process of managing the state of an application. In React, this can be done with component state or with external libraries.",
+        "keywords": [
+          "State",
+          "Data Flow"
+        ],
+        "position": {
+          "x": -225,
+          "y": 0
+        },
+        "conceptType": "Theory",
+        "createdAt": "2025-06-14T21:33:34.291Z",
+        "updatedAt": "2025-06-14T21:45:26.054Z",
+        "resources": [
+          "https://redux.js.org/",
+          "https://zustand-demo.pmnd.rs/"
+        ]
+      },
+      {
+        "id": "4",
+        "title": "Hooks",
+        "explanation": "Functions that let you \"hook into\" React state and lifecycle features from function components.",
+        "keywords": [
+          "Functions",
+          "State",
+          "Lifecycle"
+        ],
+        "position": {
+          "x": 345,
+          "y": 255
+        },
+        "conceptType": "Algorithm",
+        "createdAt": "2025-06-14T21:33:34.291Z",
+        "updatedAt": "2025-06-14T21:39:25.036Z",
+        "resources": [
+          "https://react.dev/reference/react/hooks"
+        ]
+      }
+    ],
+    "edges": [
+      {
+        "id": "e1-2",
+        "source": "1",
+        "target": "2",
+        "label": "has"
+      },
+      {
+        "id": "e1-3",
+        "source": "1",
+        "target": "3",
+        "label": "involves"
+      },
+      {
+        "id": "e2-4",
+        "source": "2",
+        "target": "4",
+        "label": "can use"
+      }
+    ]
+  },
+  "viewState": {
+    "mode": "exploration"
+  },
+  "metadata": {
+    "nodeCount": 4,
+    "edgeCount": 3,
+    "conceptTypes": [
+      "Tool",
+      "Theory",
+      "Algorithm"
+    ]
+  }
+}

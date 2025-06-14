@@ -1,0 +1,136 @@
+{
+  "version": "1.0.0",
+  "exportedAt": "2024-01-15T10:30:00.000Z",
+  "graphData": {
+    "nodes": [
+      {
+        "id": "ml-1",
+        "title": "Machine Learning",
+        "keywords": ["AI", "Algorithms", "Data Science"],
+        "explanation": "A subset of artificial intelligence that enables computers to learn and make decisions from data without being explicitly programmed for every task.",
+        "conceptType": "Field",
+        "position": { "x": 200, "y": 100 },
+        "createdAt": "2024-01-15T10:00:00.000Z",
+        "updatedAt": "2024-01-15T10:00:00.000Z",
+        "resources": [
+          "https://scikit-learn.org/",
+          "https://www.coursera.org/learn/machine-learning"
+        ]
+      },
+      {
+        "id": "ml-2",
+        "title": "Supervised Learning",
+        "keywords": ["Training Data", "Labels", "Prediction"],
+        "explanation": "A type of machine learning where algorithms learn from labeled training data to make predictions on new, unseen data.",
+        "conceptType": "Theory",
+        "position": { "x": 100, "y": 250 },
+        "createdAt": "2024-01-15T10:05:00.000Z",
+        "updatedAt": "2024-01-15T10:05:00.000Z",
+        "resources": [
+          "https://en.wikipedia.org/wiki/Supervised_learning"
+        ]
+      },
+      {
+        "id": "ml-3",
+        "title": "Unsupervised Learning",
+        "keywords": ["Clustering", "Pattern Recognition", "Unlabeled Data"],
+        "explanation": "A type of machine learning that finds hidden patterns in data without labeled examples, often used for clustering and dimensionality reduction.",
+        "conceptType": "Theory",
+        "position": { "x": 300, "y": 250 },
+        "createdAt": "2024-01-15T10:10:00.000Z",
+        "updatedAt": "2024-01-15T10:10:00.000Z",
+        "resources": [
+          "https://en.wikipedia.org/wiki/Unsupervised_learning"
+        ]
+      },
+      {
+        "id": "ml-4",
+        "title": "Neural Networks",
+        "keywords": ["Deep Learning", "Neurons", "Backpropagation"],
+        "explanation": "Computing systems inspired by biological neural networks, consisting of interconnected nodes (neurons) that can learn complex patterns through training.",
+        "conceptType": "Algorithm",
+        "position": { "x": 200, "y": 400 },
+        "createdAt": "2024-01-15T10:15:00.000Z",
+        "updatedAt": "2024-01-15T10:15:00.000Z",
+        "resources": [
+          "https://www.tensorflow.org/",
+          "https://pytorch.org/"
+        ]
+      },
+      {
+        "id": "ml-5",
+        "title": "TensorFlow",
+        "keywords": ["Google", "Deep Learning", "Framework"],
+        "explanation": "An open-source machine learning framework developed by Google for building and training neural networks and other ML models.",
+        "conceptType": "Tool",
+        "position": { "x": 100, "y": 550 },
+        "createdAt": "2024-01-15T10:20:00.000Z",
+        "updatedAt": "2024-01-15T10:20:00.000Z",
+        "resources": [
+          "https://www.tensorflow.org/",
+          "https://www.tensorflow.org/tutorials"
+        ]
+      },
+      {
+        "id": "ml-6",
+        "title": "Geoffrey Hinton",
+        "keywords": ["Deep Learning Pioneer", "Backpropagation", "AI Researcher"],
+        "explanation": "British-Canadian cognitive psychologist and computer scientist, known as one of the 'godfathers of deep learning' for his work on neural networks.",
+        "conceptType": "Person",
+        "position": { "x": 300, "y": 550 },
+        "createdAt": "2024-01-15T10:25:00.000Z",
+        "updatedAt": "2024-01-15T10:25:00.000Z",
+        "resources": [
+          "https://en.wikipedia.org/wiki/Geoffrey_Hinton"
+        ]
+      }
+    ],
+    "edges": [
+      {
+        "id": "edge-1",
+        "source": "ml-1",
+        "target": "ml-2",
+        "label": "includes"
+      },
+      {
+        "id": "edge-2",
+        "source": "ml-1",
+        "target": "ml-3",
+        "label": "includes"
+      },
+      {
+        "id": "edge-3",
+        "source": "ml-2",
+        "target": "ml-4",
+        "label": "can use"
+      },
+      {
+        "id": "edge-4",
+        "source": "ml-3",
+        "target": "ml-4",
+        "label": "can use"
+      },
+      {
+        "id": "edge-5",
+        "source": "ml-4",
+        "target": "ml-5",
+        "label": "implemented in"
+      },
+      {
+        "id": "edge-6",
+        "source": "ml-4",
+        "target": "ml-6",
+        "label": "pioneered by"
+      }
+    ]
+  },
+  "viewState": {
+    "mode": "exploration",
+    "rootConceptId": "ml-1"
+  },
+  "metadata": {
+    "nodeCount": 6,
+    "edgeCount": 6,
+    "conceptTypes": ["Field", "Theory", "Algorithm", "Tool", "Person"]
+  }
+} 
