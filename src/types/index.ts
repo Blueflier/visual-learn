@@ -84,6 +84,7 @@ export interface AppState {
   selectedNodeId?: string | null;
   selectedEdgeId?: string | null;
   selectedNode: ConceptNode | null;
+  selectedEdge: ConceptEdge | null;
   isSettingsPanelOpen: boolean;
   isDetailSidebarOpen: boolean;
 }

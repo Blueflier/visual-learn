@@ -1,7 +1,7 @@
 import { useGraphStore } from '../store/graphStore';
 
 const Header = () => {
-  const { toggleSettingsPanel, toggleDetailSidebar, selectedNode } = useGraphStore();
+  const { toggleSettingsPanel, toggleDetailSidebar, selectedNode, selectedEdge } = useGraphStore();
 
   return (
     <header className="app-header">
@@ -27,12 +27,12 @@ const Header = () => {
           ⚙️
         </button>
         <button 
-          className={`tool-button ${selectedNode ? 'active' : 'disabled'}`}
+          className={`tool-button ${selectedNode || selectedEdge ? 'active' : 'disabled'}`}
           onClick={toggleDetailSidebar}
-          disabled={!selectedNode}
-          title="Node Details"
+          disabled={!selectedNode && !selectedEdge}
+          title={selectedNode ? "Node Details" : selectedEdge ? "Edge Details" : "Details"}
         >
-          📋
+          {selectedNode ? '📋' : selectedEdge ? '🔗' : '📋'}
         </button>
       </div>
     </header>

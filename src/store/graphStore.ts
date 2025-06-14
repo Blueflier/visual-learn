@@ -35,6 +35,7 @@ export const useGraphStore = create<AppState & Actions>()(
       selectedNodeId: null,
       selectedEdgeId: null,
       selectedNode: null,
+      selectedEdge: null,
       isSettingsPanelOpen: false,
       isDetailSidebarOpen: false,
 
@@ -93,22 +94,38 @@ export const useGraphStore = create<AppState & Actions>()(
         })),
       
       updateEdge: (edgeId: string, updates: Partial<ConceptEdge>) =>
-        set(state => ({
-          graphData: {
-            ...state.graphData,
-            edges: state.graphData.edges.map(edge =>
-              edge.id === edgeId ? { ...edge, ...updates } : edge
-            ),
-          },
-        })),
+        set(state => {
+          const updatedEdges = state.graphData.edges.map(edge =>
+            edge.id === edgeId ? { ...edge, ...updates } : edge
+          );
+          const newSelectedEdge = 
+            edgeId === state.selectedEdgeId
+            ? updatedEdges.find(e => e.id === edgeId) || null
+            : state.selectedEdge;
+
+          return {
+            graphData: {
+              ...state.graphData,
+              edges: updatedEdges,
+            },
+            selectedEdge: newSelectedEdge
+          };
+        }),
       
       removeEdge: (edgeId: string) =>
-        set(state => ({
-          graphData: {
-            ...state.graphData,
-            edges: state.graphData.edges.filter(edge => edge.id !== edgeId),
-          },
-        })),
+        set(state => {
+          const newSelectedEdgeId = edgeId === state.selectedEdgeId ? null : state.selectedEdgeId;
+          const newSelectedEdge = edgeId === state.selectedEdgeId ? null : state.selectedEdge;
+
+          return {
+            graphData: {
+              ...state.graphData,
+              edges: state.graphData.edges.filter(edge => edge.id !== edgeId),
+            },
+            selectedEdgeId: newSelectedEdgeId,
+            selectedEdge: newSelectedEdge,
+          };
+        }),
 
       setRootConceptId: (nodeId?: string) =>
         set(state => ({
@@ -128,8 +145,10 @@ export const useGraphStore = create<AppState & Actions>()(
         set({ selectedNodeId: nodeId, selectedNode: node });
       },
 
-      setSelectedEdgeId: (edgeId: string | null) =>
-        set({ selectedEdgeId: edgeId }),
+      setSelectedEdgeId: (edgeId: string | null) => {
+        const edge = get().graphData.edges.find(e => e.id === edgeId) || null;
+        set({ selectedEdgeId: edgeId, selectedEdge: edge });
+      },
       
       toggleSettingsPanel: () =>
         set(state => ({ isSettingsPanelOpen: !state.isSettingsPanelOpen })),

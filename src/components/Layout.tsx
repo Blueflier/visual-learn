@@ -2,6 +2,7 @@ import Header from './Header';
 import MainCanvas from './MainCanvas';
 import SettingsPanel from './SettingsPanel';
 import NodeDetailSidebar from './NodeDetailSidebar';
+import EdgeDetailSidebar from './EdgeDetailSidebar';
 
 const Layout = () => {
   return (
@@ -11,6 +12,7 @@ const Layout = () => {
         <MainCanvas />
         <SettingsPanel />
         <NodeDetailSidebar />
+        <EdgeDetailSidebar />
       </div>
     </div>
   );
