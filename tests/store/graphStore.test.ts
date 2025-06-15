@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
-import { useGraphStore } from './graphStore';
-import type { ConceptNode, ConceptEdge, ConceptGraph } from '../types';
+import { useGraphStore } from '../../src/store/graphStore';
+import type { ConceptNode, ConceptEdge, ConceptGraph } from '../../src/types';
 
 // Mock console methods to avoid noise in tests
 const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});

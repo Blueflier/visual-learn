@@ -8,8 +8,8 @@ import {
   applyLinearLayout,
   autoLayout,
   type LayoutConfig,
-} from './graphLayout';
-import type { ConceptNode, ConceptEdge, ConceptGraph } from '../types';
+} from '../../src/utils/graphLayout';
+import type { ConceptNode, ConceptEdge, ConceptGraph } from '../../src/types';
 
 // Test data
 const createTestNode = (id: string, x?: number, y?: number): ConceptNode => ({

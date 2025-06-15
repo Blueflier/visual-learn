@@ -1,8 +1,8 @@
 import { describe, it, expect, beforeEach, vi, afterEach } from 'vitest';
-import { useGraphStore } from '../store/graphStore';
+import { useGraphStore } from '../../src/store/graphStore';
 
 // Mock the graph store
-vi.mock('../store/graphStore', () => ({
+vi.mock('../../src/store/graphStore', () => ({
   useGraphStore: vi.fn(),
 }));
 

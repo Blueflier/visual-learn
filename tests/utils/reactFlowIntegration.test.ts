@@ -9,8 +9,8 @@ import {
   GraphExporter,
   GraphImporter,
   ReactFlowUtils,
-} from './reactFlowIntegration';
-import type { ConceptNode, ConceptEdge, ConceptGraph, ConceptType } from '../types';
+} from '../../src/utils/reactFlowIntegration';
+import type { ConceptNode, ConceptEdge, ConceptGraph, ConceptType } from '../../src/types';
 
 // Test helper functions
 const createTestNode = (

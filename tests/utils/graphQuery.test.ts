@@ -9,8 +9,8 @@ import {
   getNodesWithResources,
   getNodesWithImages,
   type NodeFilterCriteria,
-} from './graphQuery';
-import type { ConceptNode, ConceptEdge, ConceptGraph } from '../types';
+} from '../../src/utils/graphQuery';
+import type { ConceptNode, ConceptEdge, ConceptGraph } from '../../src/types';
 
 // Test helper functions
 function createTestNode(
