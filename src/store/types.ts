@@ -104,5 +104,5 @@ export interface Actions extends
 export type StoreGet = () => EnhancedAppState & Actions & Selectors;
 export type StoreSet = (
   partial: EnhancedAppState | Partial<EnhancedAppState> | ((state: EnhancedAppState & Actions & Selectors) => EnhancedAppState | Partial<EnhancedAppState>),
-  replace?: boolean | undefined
+  replace?: false | undefined
 ) => void; 

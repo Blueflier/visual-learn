@@ -1,7 +1,7 @@
 import type { ConceptEdge } from '../../types';
-import type { EdgeActions, StoreGet, StoreSet } from '../types';
+import type { EdgeActions, StoreSet } from '../types';
 
-export const createEdgeActions = (set: StoreSet, get: StoreGet): EdgeActions => ({
+export const createEdgeActions = (set: StoreSet): EdgeActions => ({
   addEdge: (edge: ConceptEdge) => {
     try {
       set(state => ({

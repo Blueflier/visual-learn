@@ -1,4 +1,3 @@
-import type { ConceptNode, ConceptEdge } from '../types';
 import type { Selectors, StoreGet } from './types';
 
 export const createSelectors = (get: StoreGet): Selectors => ({

@@ -23,11 +23,11 @@ export const useGraphStore = create<EnhancedAppState & Actions & Selectors>()(
     persist(
       (set, get) => {
         // Create action instances
-        const nodeActions = createNodeActions(set, get);
-        const edgeActions = createEdgeActions(set, get);
+        const nodeActions = createNodeActions(set);
+        const edgeActions = createEdgeActions(set);
         const selectionActions = createSelectionActions(set, get);
         const graphActions = createGraphActions(set, get);
-        const uiActions = createUIActions(set, get);
+        const uiActions = createUIActions(set);
         const selectors = createSelectors(get);
 
         return {

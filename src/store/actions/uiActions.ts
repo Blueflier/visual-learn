@@ -1,6 +1,6 @@
-import type { UIActions, StoreGet, StoreSet } from '../types';
+import type { UIActions, StoreSet } from '../types';
 
-export const createUIActions = (set: StoreSet, get: StoreGet): UIActions => ({
+export const createUIActions = (set: StoreSet): UIActions => ({
   toggleSettingsPanel: () => {
     try {
       set(state => ({ isSettingsPanelOpen: !state.isSettingsPanelOpen }));

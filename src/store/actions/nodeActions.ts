@@ -1,7 +1,7 @@
 import type { ConceptNode } from '../../types';
-import type { NodeActions, StoreGet, StoreSet } from '../types';
+import type { NodeActions, StoreSet } from '../types';
 
-export const createNodeActions = (set: StoreSet, get: StoreGet): NodeActions => ({
+export const createNodeActions = (set: StoreSet): NodeActions => ({
   addNode: (node: ConceptNode) => {
     try {
       set(state => ({
