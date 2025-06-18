@@ -100,4 +100,121 @@ export const createNodeActions = (set: StoreSet): NodeActions => ({
       console.error('Failed to remove node:', error);
     }
   },
+
+  // Node expansion/collapse actions
+  toggleNodeExpansion: (nodeId: string) => {
+    try {
+      set(state => {
+        const nodeIndex = state.graphData.nodes.findIndex(node => node.id === nodeId);
+        if (nodeIndex === -1) {
+          console.warn(`Node with id ${nodeId} not found for expansion toggle`);
+          return state;
+        }
+
+        const updatedNodes = [...state.graphData.nodes];
+        const currentNode = updatedNodes[nodeIndex];
+        updatedNodes[nodeIndex] = { 
+          ...currentNode, 
+          expanded: !currentNode.expanded,
+          updatedAt: new Date() 
+        };
+
+        return {
+          graphData: {
+            ...state.graphData,
+            nodes: updatedNodes,
+          },
+        };
+      });
+    } catch (error) {
+      console.error('Failed to toggle node expansion:', error);
+    }
+  },
+
+  expandNode: (nodeId: string) => {
+    try {
+      set(state => {
+        const nodeIndex = state.graphData.nodes.findIndex(node => node.id === nodeId);
+        if (nodeIndex === -1) {
+          console.warn(`Node with id ${nodeId} not found for expansion`);
+          return state;
+        }
+
+        const updatedNodes = [...state.graphData.nodes];
+        updatedNodes[nodeIndex] = { 
+          ...updatedNodes[nodeIndex], 
+          expanded: true,
+          updatedAt: new Date() 
+        };
+
+        return {
+          graphData: {
+            ...state.graphData,
+            nodes: updatedNodes,
+          },
+        };
+      });
+    } catch (error) {
+      console.error('Failed to expand node:', error);
+    }
+  },
+
+  collapseNode: (nodeId: string) => {
+    try {
+      set(state => {
+        const nodeIndex = state.graphData.nodes.findIndex(node => node.id === nodeId);
+        if (nodeIndex === -1) {
+          console.warn(`Node with id ${nodeId} not found for collapse`);
+          return state;
+        }
+
+        const updatedNodes = [...state.graphData.nodes];
+        updatedNodes[nodeIndex] = { 
+          ...updatedNodes[nodeIndex], 
+          expanded: false,
+          updatedAt: new Date() 
+        };
+
+        return {
+          graphData: {
+            ...state.graphData,
+            nodes: updatedNodes,
+          },
+        };
+      });
+    } catch (error) {
+      console.error('Failed to collapse node:', error);
+    }
+  },
+
+  // Node refocusing action
+  focusOnNode: (nodeId: string) => {
+    try {
+      set(state => {
+        const node = state.graphData.nodes.find(n => n.id === nodeId);
+        if (!node) {
+          console.warn(`Node with id ${nodeId} not found for refocusing`);
+          return state;
+        }
+
+        console.log(`🎯 Refocusing graph on node: ${node.title} (${nodeId})`);
+        
+        return {
+          viewState: {
+            ...state.viewState,
+            rootConceptId: nodeId,
+          },
+          selectedNodeIds: [nodeId],
+          selectedNodeId: nodeId,
+          selectedNode: node,
+          selectedEdgeIds: [],
+          selectedEdgeId: null,
+          selectedEdge: null,
+          isDetailSidebarOpen: true,
+        };
+      });
+    } catch (error) {
+      console.error('Failed to focus on node:', error);
+    }
+  },
 }); 

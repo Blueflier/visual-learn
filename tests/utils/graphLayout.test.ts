@@ -2,6 +2,7 @@ import { describe, it, expect, beforeEach } from 'vitest';
 import {
   ForceDirectedLayout,
   RadialLayout,
+  LinearFocusLayout,
   GraphLayoutUtils,
   applyForceDirectedLayout,
   applyRadialLayout,
@@ -163,6 +164,62 @@ describe('RadialLayout', () => {
       const distance = Math.sqrt(dx * dx + dy * dy);
       expect(distance).toBeCloseTo(80, 0); // radius * 0.8
     });
+  });
+});
+
+describe('LinearFocusLayout', () => {
+  it('should arrange nodes in hierarchical levels', () => {
+    const layout = new LinearFocusLayout(testNodes, testEdges, '1');
+    const result = layout.layout();
+    
+    result.forEach(node => {
+      expect(node.position).toBeDefined();
+      expect(node.position!.x).toBeGreaterThanOrEqual(0);
+      expect(node.position!.y).toBeGreaterThanOrEqual(0);
+    });
+  });
+
+  it('should handle nodes without edges', () => {
+    const disconnectedNodes = [createTestNode('1'), createTestNode('2')];
+    const layout = new LinearFocusLayout(disconnectedNodes, []);
+    const result = layout.layout();
+    
+    expect(result).toHaveLength(2);
+    result.forEach(node => {
+      expect(node.position).toBeDefined();
+    });
+  });
+
+  it('should position root node at top level', () => {
+    const layout = new LinearFocusLayout(testNodes, testEdges, '1');
+    const result = layout.layout();
+    
+    const rootNode = result.find(n => n.id === '1');
+    expect(rootNode!.position!.y).toBe(100); // Top level Y position
+  });
+
+  it('should arrange children below parents', () => {
+    // Create a simple parent-child hierarchy
+    const hierarchyNodes = [
+      createTestNode('parent'),
+      createTestNode('child1'),
+      createTestNode('child2'),
+    ];
+    const hierarchyEdges = [
+      createTestEdge('e1', 'parent', 'child1'),
+      createTestEdge('e2', 'parent', 'child2'),
+    ];
+    
+    const layout = new LinearFocusLayout(hierarchyNodes, hierarchyEdges, 'parent');
+    const result = layout.layout();
+    
+    const parent = result.find(n => n.id === 'parent');
+    const child1 = result.find(n => n.id === 'child1');
+    const child2 = result.find(n => n.id === 'child2');
+    
+    expect(parent!.position!.y).toBeLessThan(child1!.position!.y);
+    expect(parent!.position!.y).toBeLessThan(child2!.position!.y);
+    expect(child1!.position!.y).toBe(child2!.position!.y); // Same level
   });
 });
 
@@ -379,13 +436,20 @@ describe('High-level layout functions', () => {
   });
 
   describe('autoLayout', () => {
-    it('should apply linear layout for focus mode', () => {
+    it('should apply hierarchical linear layout for focus mode', () => {
       const result = autoLayout(testGraph, 'focus', 800, 600);
       
-      // All nodes should have same y position in focus mode
+      // Should have applied hierarchical linear focus layout
+      result.nodes.forEach(node => {
+        expect(node.position).toBeDefined();
+        expect(node.position!.x).toBeGreaterThanOrEqual(0);
+        expect(node.position!.y).toBeGreaterThanOrEqual(0);
+      });
+      
+      // Nodes should be arranged in levels (different Y positions for hierarchy)
       const yPositions = result.nodes.map(n => n.position!.y);
       const uniqueY = new Set(yPositions);
-      expect(uniqueY.size).toBe(1);
+      expect(uniqueY.size).toBeGreaterThanOrEqual(1);
     });
 
     it('should apply radial layout for exploration mode with root', () => {

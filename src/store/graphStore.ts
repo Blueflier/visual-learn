@@ -55,6 +55,9 @@ export const useGraphStore = create<EnhancedAppState & Actions & Selectors>()(
           // UI state
           isSettingsPanelOpen: false,
           isDetailSidebarOpen: false,
+          
+          // Context menu state
+          contextMenu: null,
 
           // Spread all actions
           ...nodeActions,

@@ -170,6 +170,46 @@ html, body, #root {
   background: #27ae60;
 }
 
+/* Mode Toggle Button */
+.mode-toggle {
+  background: #9b59b6;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 100px;
+  justify-content: center;
+}
+
+.mode-toggle:hover {
+  background: #8e44ad;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.mode-toggle.focus-mode {
+  background: #e67e22;
+}
+
+.mode-toggle.focus-mode:hover {
+  background: #d35400;
+}
+
+.mode-toggle.exploration-mode {
+  background: #3498db;
+}
+
+.mode-toggle.exploration-mode:hover {
+  background: #2980b9;
+}
+
 .app-content {
   flex: 1;
   position: relative;

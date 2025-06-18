@@ -1,7 +1,8 @@
-import React from 'react';
+import React, { useCallback } from 'react';
 import { Handle, Position } from '@xyflow/react';
 import type { NodeProps } from '@xyflow/react';
 import type { ConceptNode } from '../types';
+import { useGraphStore } from '../store/graphStore';
 
 /**
  * Custom React Flow node component for rendering concept nodes
@@ -13,11 +14,16 @@ const ConceptNodeComponent: React.FC<NodeProps> = ({
   // Type assertion for our custom data
   const conceptData = data as ConceptNode & { label: string };
   
+  // Get store actions
+  const { toggleNodeExpansion, focusOnNode } = useGraphStore();
+  
   const {
+    id,
     title,
     conceptType,
     keywords,
     explanation,
+    expanded = false,
   } = conceptData;
 
   // Get concept type icon
@@ -32,12 +38,24 @@ const ConceptNodeComponent: React.FC<NodeProps> = ({
     }
   };
 
+  // Handle expansion toggle
+  const handleToggleExpansion = useCallback((e: React.MouseEvent) => {
+    e.stopPropagation();
+    toggleNodeExpansion(id);
+  }, [id, toggleNodeExpansion]);
+
+  // Handle refocus on double-click
+  const handleDoubleClick = useCallback((e: React.MouseEvent) => {
+    e.stopPropagation();
+    focusOnNode(id);
+  }, [id, focusOnNode]);
+
   return (
     <div 
-      className={`concept-node-wrapper ${selected ? 'selected' : ''}`}
+      className={`concept-node-wrapper ${selected ? 'selected' : ''} ${expanded ? 'expanded' : ''}`}
       style={{
         minWidth: '180px',
-        maxWidth: '250px',
+        maxWidth: expanded ? '350px' : '250px',
         background: 'white',
         border: `2px solid ${selected ? '#3b82f6' : '#e5e7eb'}`,
         borderRadius: '12px',
@@ -47,6 +65,7 @@ const ConceptNodeComponent: React.FC<NodeProps> = ({
         transition: 'all 0.2s ease',
         overflow: 'hidden',
       }}
+      onDoubleClick={handleDoubleClick}
     >
       {/* Header with concept type */}
       <div 
@@ -75,6 +94,35 @@ const ConceptNodeComponent: React.FC<NodeProps> = ({
             {conceptType || 'Concept'}
           </span>
         </div>
+        
+        {/* Expansion toggle button */}
+        <button
+          onClick={handleToggleExpansion}
+          style={{
+            background: 'transparent',
+            border: 'none',
+            cursor: 'pointer',
+            fontSize: '12px',
+            color: '#6b7280',
+            padding: '4px',
+            borderRadius: '4px',
+            transition: 'all 0.2s ease',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+          }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.background = '#e5e7eb';
+            e.currentTarget.style.color = '#374151';
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.background = 'transparent';
+            e.currentTarget.style.color = '#6b7280';
+          }}
+          title={expanded ? 'Collapse details' : 'Expand details'}
+        >
+          {expanded ? '−' : '+'}
+        </button>
       </div>
 
       {/* Main content */}
@@ -93,7 +141,7 @@ const ConceptNodeComponent: React.FC<NodeProps> = ({
           {title}
         </h3>
 
-        {/* Explanation preview */}
+        {/* Explanation preview/full */}
         {explanation && (
           <p 
             style={{
@@ -101,10 +149,17 @@ const ConceptNodeComponent: React.FC<NodeProps> = ({
               fontSize: '12px',
               color: '#6b7280',
               lineHeight: '1.4',
-              display: '-webkit-box',
-              WebkitLineClamp: 2,
-              WebkitBoxOrient: 'vertical',
-              overflow: 'hidden',
+              ...(expanded ? {
+                // Full explanation when expanded
+                maxHeight: 'none',
+                overflow: 'visible',
+              } : {
+                // Truncated when collapsed
+                display: '-webkit-box',
+                WebkitLineClamp: 2,
+                WebkitBoxOrient: 'vertical',
+                overflow: 'hidden',
+              }),
             }}
           >
             {explanation}
@@ -114,7 +169,7 @@ const ConceptNodeComponent: React.FC<NodeProps> = ({
         {/* Keywords */}
         {keywords && keywords.length > 0 && (
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: '4px', marginTop: '8px' }}>
-            {keywords.slice(0, 3).map((keyword: string, index: number) => (
+            {(expanded ? keywords : keywords.slice(0, 3)).map((keyword: string, index: number) => (
               <span
                 key={index}
                 style={{
@@ -130,7 +185,7 @@ const ConceptNodeComponent: React.FC<NodeProps> = ({
                 {keyword}
               </span>
             ))}
-            {keywords.length > 3 && (
+            {!expanded && keywords.length > 3 && (
               <span
                 style={{
                   fontSize: '10px',

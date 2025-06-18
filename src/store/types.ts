@@ -14,6 +14,9 @@ export interface EnhancedAppState extends Omit<AppState, 'selectedNodeId' | 'sel
   // Legacy single selection (updated by actions)
   selectedNodeId: string | null;
   selectedEdgeId: string | null;
+  
+  // Context menu state
+  contextMenu?: ContextMenuData | null;
 }
 
 // Node-related actions
@@ -22,6 +25,14 @@ export interface NodeActions {
   updateNode: (nodeId: string, updates: Partial<ConceptNode>) => void;
   removeNode: (nodeId: string) => void;
   batchUpdateNodes: (updates: Array<{ id: string; updates: Partial<ConceptNode> }>) => void;
+  
+  // Node expansion/collapse actions
+  toggleNodeExpansion: (nodeId: string) => void;
+  expandNode: (nodeId: string) => void;
+  collapseNode: (nodeId: string) => void;
+  
+  // Node refocusing action
+  focusOnNode: (nodeId: string) => void;
 }
 
 // Edge-related actions
@@ -61,11 +72,23 @@ export interface GraphActions {
   loadGraph: (graph: ConceptGraph) => void;
 }
 
+// Context menu data structure
+export interface ContextMenuData {
+  x: number;
+  y: number;
+  mode: 'focus' | 'exploration';
+  nearbyNodeId?: string;
+}
+
 // UI state actions
 export interface UIActions {
   toggleSettingsPanel: () => void;
   toggleDetailSidebar: () => void;
   setDetailSidebarOpen: (open: boolean) => void;
+  
+  // Context menu actions
+  createContextMenu: (data: ContextMenuData) => void;
+  closeContextMenu: () => void;
 }
 
 // Derived state selectors

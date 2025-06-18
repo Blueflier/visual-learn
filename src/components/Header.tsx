@@ -3,6 +3,8 @@ import { useGraphStore } from '../store/graphStore';
 
 const Header = () => {
   const { 
+    viewState,
+    toggleMode,
     toggleSettingsPanel, 
     toggleDetailSidebar, 
     selectedNode, 
@@ -95,6 +97,13 @@ const Header = () => {
       </div>
       
       <div className="header-right">
+        <button 
+          className={`mode-toggle ${viewState.mode === 'focus' ? 'focus-mode' : 'exploration-mode'}`}
+          onClick={toggleMode}
+          title={`Switch to ${viewState.mode === 'focus' ? 'Exploration' : 'Focus'} Mode`}
+        >
+          {viewState.mode === 'focus' ? '🎯 Focus' : '🌐 Explore'}
+        </button>
         <button 
           className="tool-button"
           onClick={toggleSettingsPanel}

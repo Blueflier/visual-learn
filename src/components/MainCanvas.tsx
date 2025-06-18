@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useEffect } from 'react';
+import { useCallback, useMemo, useEffect, useRef } from 'react';
 import {
   ReactFlow,
   Background,
@@ -8,6 +8,7 @@ import {
   BackgroundVariant,
   useNodesState,
   useEdgesState,
+  useReactFlow,
 } from '@xyflow/react';
 import type { Connection, NodeChange, EdgeChange } from '@xyflow/react';
 import '@xyflow/react/dist/style.css';
@@ -21,6 +22,7 @@ import {
   type ConceptFlowNode,
   type ConceptFlowEdge,
 } from '../utils/reactFlowIntegration';
+import { autoLayout, GraphLayoutUtils } from '../utils/graphLayout';
 
 // Define node types outside component to maintain stable reference
 const nodeTypes = {
@@ -30,6 +32,7 @@ const nodeTypes = {
 const MainCanvas = () => {
   const { 
     graphData, 
+    viewState,
     selectedNodeId, 
     selectedEdgeId,
     setSelectedNodeId, 
@@ -38,7 +41,15 @@ const MainCanvas = () => {
     addEdge,
     removeNode,
     removeEdge,
+    batchUpdateNodes,
+    focusOnNode,
+    createContextMenu,
+    closeContextMenu,
   } = useGraphStore();
+
+  const reactFlowInstance = useReactFlow();
+  const previousModeRef = useRef(viewState.mode);
+  const previousRootRef = useRef(viewState.rootConceptId);
 
   // Convert internal graph data to React Flow format with stable references
   const initialNodes = useMemo(() => 
@@ -54,6 +65,61 @@ const MainCanvas = () => {
   // Use React Flow's built-in state management for optimal performance
   const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
   const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
+
+  // Apply layout when mode changes
+  useEffect(() => {
+    const modeChanged = previousModeRef.current !== viewState.mode;
+    const rootChanged = previousRootRef.current !== viewState.rootConceptId;
+    
+    if ((modeChanged || rootChanged) && graphData.nodes.length > 0) {
+      console.log('🔄 Layout mode changed:', {
+        from: previousModeRef.current,
+        to: viewState.mode,
+        rootConceptId: viewState.rootConceptId
+      });
+
+      // Get canvas dimensions
+      const canvasWidth = window.innerWidth;
+      const canvasHeight = window.innerHeight;
+
+      // Apply the appropriate layout
+      const layoutedGraph = autoLayout(
+        graphData,
+        viewState.mode,
+        canvasWidth,
+        canvasHeight,
+        viewState.rootConceptId
+      );
+
+      // Animate to new positions if mode changed
+      if (modeChanged) {
+        GraphLayoutUtils.animateToPositions(
+          graphData.nodes,
+          layoutedGraph.nodes,
+          800, // 800ms animation
+          (animatedNodes) => {
+            // Update the store with animated positions
+            const updates = animatedNodes.map(node => ({
+              id: node.id,
+              updates: { position: node.position }
+            }));
+            batchUpdateNodes(updates);
+          }
+        );
+      } else {
+        // Just update positions immediately for root changes
+        const updates = layoutedGraph.nodes.map(node => ({
+          id: node.id,
+          updates: { position: node.position }
+        }));
+        batchUpdateNodes(updates);
+      }
+
+      // Update refs
+      previousModeRef.current = viewState.mode;
+      previousRootRef.current = viewState.rootConceptId;
+    }
+  }, [viewState.mode, viewState.rootConceptId, graphData, reactFlowInstance, batchUpdateNodes]);
 
   // Sync React Flow state with store state when store changes
   useEffect(() => {
@@ -164,15 +230,42 @@ const MainCanvas = () => {
     console.log('🌐 Pane clicked - clearing selections');
     setSelectedNodeId(null);
     setSelectedEdgeId(null);
-  }, [setSelectedNodeId, setSelectedEdgeId]);
+    closeContextMenu();
+  }, [setSelectedNodeId, setSelectedEdgeId, closeContextMenu]);
+
+  const handlePaneContextMenu = useCallback((event: React.MouseEvent | MouseEvent) => {
+    event.preventDefault();
+    
+    // Get coordinates - works for both React.MouseEvent and MouseEvent
+    const clientX = event.clientX;
+    const clientY = event.clientY;
+    
+    // Find the nearest node for context
+    const nearbyNode = graphData.nodes.find(node => {
+      const nodePos = node.position || { x: 0, y: 0 };
+      const distance = Math.sqrt(
+        Math.pow(clientX - nodePos.x, 2) + Math.pow(clientY - nodePos.y, 2)
+      );
+      return distance < 150; // Within 150px
+    });
+
+    console.log('🎯 Right-clicked on pane at:', { x: clientX, y: clientY });
+    
+    createContextMenu({
+      x: clientX,
+      y: clientY,
+      mode: viewState.mode,
+      nearbyNodeId: nearbyNode?.id,
+    });
+  }, [graphData.nodes, viewState.mode, createContextMenu]);
 
   const handleNodeDoubleClick = useCallback((
     _event: React.MouseEvent,
     node: ConceptFlowNode
   ) => {
-    // TODO: Open node editing modal or inline editor
-    console.log('Double-clicked node:', node.data.title);
-  }, []);
+    console.log('🎯 Double-clicked node for refocusing:', node.data.title);
+    focusOnNode(node.id);
+  }, [focusOnNode]);
 
   // Memoized fit view options for stable reference
   const fitViewOptions = useMemo(() => ({
@@ -200,6 +293,7 @@ const MainCanvas = () => {
         onEdgeClick={handleEdgeClick}
         onNodeDoubleClick={handleNodeDoubleClick}
         onPaneClick={handlePaneClick}
+        onPaneContextMenu={handlePaneContextMenu}
         fitView
         fitViewOptions={fitViewOptions}
         minZoom={0.05}

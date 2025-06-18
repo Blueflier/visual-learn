@@ -30,6 +30,8 @@ export type ConceptNode = {
   resources: string[];
   /** A URL for an image representing the concept. */
   imageUrl?: string;
+  /** Whether the node is currently expanded to show additional details. */
+  expanded?: boolean;
 };
 
 /**
